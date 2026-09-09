@@ -14,7 +14,7 @@ namespace MyGameNamespace
 {
     public class BoxController : MonoBehaviour, IPointerClickHandler
     {
-
+        [field: SerializeField] public string ResourcesID { get; set; } = "resource_1";
         [SerializeField] private Animation animation;
         [SerializeField] private GameObject graphicObject;
         [SerializeField] private GameObject plantObject;
@@ -24,6 +24,7 @@ namespace MyGameNamespace
         [SerializeField] private GameObject UIPivot;
         [SerializeField] private TMP_Text txtName;
         [SerializeField] private TMP_Text txtCostToBuild;
+        [SerializeField] private Image imgIconResource;
         [SerializeField] private Button btnUnlock;
 
         [Header("Building")]
@@ -47,6 +48,7 @@ namespace MyGameNamespace
 
         async void Awake()
         {
+            plantObject.GetComponent<IPlant>().ResourcesID = ResourcesID;
             UIContainer.gameObject.SetActive(false);
             _stateMachine = new StateMachine();
             _stateMachine.SetResolver(new GameUtils.DefaultResolver());
@@ -100,9 +102,11 @@ namespace MyGameNamespace
                 // Bật UI
                 boxController.UIContainer.gameObject.SetActive(true);
 
+                var c = GameConfig.Ins.GetResourceConfig(boxController.ResourcesID);
+                boxController.imgIconResource.sprite = c.Avatar;
+
                 // Đặt vị trí UI theo world
                 boxController.UIPivot.transform.position = Camera.main.WorldToScreenPoint(boxController.transform.position) + Vector3.up * 2;
-
                 // Gán text
                 boxController.txtName.text = boxController.Name;
                 boxController.txtCostToBuild.text = GameUtils.FormatNumber(boxController.CostToUnBox).ToString();

@@ -19,6 +19,7 @@ namespace MyGameNamespace
         [SerializeField] private TMP_Text txtCoinEarn;
         [SerializeField] private TMP_Text txtDuration;
         [SerializeField] private TMP_Text txtSpeedPerMinute;
+        [SerializeField] private Image imgIcon;
         [SerializeField] private GameObject viewStats;
         [SerializeField] private ConstructionUpgradwView constructionUpgradwView;
 
@@ -27,6 +28,7 @@ namespace MyGameNamespace
         [field: SerializeField] public int Level { get; set; }
         [field: SerializeField] public int CoinEarn { get; set; }
         [field: SerializeField] public float Duration { get; set; }
+        [field: SerializeField] public string ResourcesID { get; set; } = "resource_1";
         public List<ILevelPlant> LevelPlants { get => levelConfigList.ConvertAll(_ => _.Value); }
 
         async void Awake()
@@ -54,6 +56,8 @@ namespace MyGameNamespace
             txtCoinEarn.text = GameUtils.FormatNumber(CoinEarn);
             txtDuration.text = Duration.ToString() + "s";
             txtSpeedPerMinute.text = GameUtils.FormatNumber((int)(CoinEarn * 60 / Duration)) + "/min";
+            var c = GameConfig.Ins.GetResourceConfig(ResourcesID);
+            imgIcon.sprite = c.Avatar;
         }
 
         public void OnPointerClick(PointerEventData eventData)

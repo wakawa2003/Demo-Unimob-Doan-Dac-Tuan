@@ -649,11 +649,13 @@ MonoBehaviour:
   txtCoinEarn: {fileID: 834728026229429527}
   txtDuration: {fileID: 1901735573924279349}
   txtSpeedPerMinute: {fileID: 1901735573924279349}
+  imgIcon: {fileID: 3717078733580814030}
   viewStats: {fileID: 1217332556641492812}
   constructionUpgradwView: {fileID: 4879722078760092645}
   <Level>k__BackingField: 0
   <CoinEarn>k__BackingField: 0
   <Duration>k__BackingField: 0
+  <ResourcesID>k__BackingField: resource_1
 --- !u!1 &8328031959094940415
 GameObject:
   m_ObjectHideFlags: 0

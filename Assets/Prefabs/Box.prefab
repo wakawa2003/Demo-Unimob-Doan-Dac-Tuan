@@ -33,7 +33,7 @@ RectTransform:
   m_Father: {fileID: 4488152675236835644}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0.845, y: 1}
+  m_AnchorMax: {x: 0.574, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 6.4442, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -133,7 +133,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.105882354}
+  m_Color: {r: 0.5754717, g: 0.15472588, b: 0.15472588, a: 0.54509807}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -377,7 +377,7 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 0.845
+  m_Value: 0.574
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -621,6 +621,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d340361ce6dc3478aacb53d3d216a2b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MyGameNamespace.BoxController
+  <ResourcesID>k__BackingField: resource_1
   animation: {fileID: 6883174531985178943}
   graphicObject: {fileID: 4817587571533825207}
   plantObject: {fileID: 0}
@@ -628,6 +629,7 @@ MonoBehaviour:
   UIPivot: {fileID: 6086275488602984093}
   txtName: {fileID: 746697569703158303}
   txtCostToBuild: {fileID: 2499601542418899018}
+  imgIconResource: {fileID: 7838958881375577905}
   btnUnlock: {fileID: 5321168641889910768}
   TimeToBuild: 5
   containerBuildingView: {fileID: 9182618858108973576}
@@ -753,8 +755,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 647164013564950849}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.845, y: 0}
-  m_AnchorMax: {x: 0.845, y: 1}
+  m_AnchorMin: {x: 0.574, y: 0}
+  m_AnchorMax: {x: 0.574, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -1034,18 +1036,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1201501036871561121, guid: bd3f29c6f2c0d4bcea19079314214c85, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1201501036871561121, guid: bd3f29c6f2c0d4bcea19079314214c85, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1201501036871561121, guid: bd3f29c6f2c0d4bcea19079314214c85, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1201501036871561121, guid: bd3f29c6f2c0d4bcea19079314214c85, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -1218,6 +1208,17 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 1093446925927276690, guid: bd3f29c6f2c0d4bcea19079314214c85, type: 3}
   m_PrefabInstance: {fileID: 6006560231831623176}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7838958881375577905 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4580729427478393145, guid: bd3f29c6f2c0d4bcea19079314214c85, type: 3}
+  m_PrefabInstance: {fileID: 6006560231831623176}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &8033618744454580512
 PrefabInstance:
   m_ObjectHideFlags: 0

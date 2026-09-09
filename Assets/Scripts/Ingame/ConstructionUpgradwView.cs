@@ -61,6 +61,9 @@ namespace MyGameNamespace
             {
                 txtCostToUpgrade.text = GameUtils.FormatNumber(l[plant.Level].CostToUpgrade);
             }
+
+            var a = GameConfig.Ins.GetResourceConfig(plant.ResourcesID);
+            txtProductName.text = a.Name;
             txtReward.text = GameUtils.FormatNumber(plant.CoinEarn);
             txtDuration.text = plant.Duration.ToString() + "s";
             btnUpgrade.gameObject.SetActive(plant.Level < l.Count);

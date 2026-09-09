@@ -6,6 +6,8 @@ namespace MyGameNamespace
 {
     public interface IPlant
     {
+
+        public string ResourcesID { get; set; }
         public Transform transform { get; }
         public void SetLevel(ILevelPlant levelPlant);
         public List<ILevelPlant> LevelPlants { get; }
