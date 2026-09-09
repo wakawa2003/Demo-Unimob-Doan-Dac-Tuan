@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using UniState;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -8,6 +9,18 @@ namespace MyGameNamespace
 {
     public class GameUtils
     {
+        public class DefaultResolver : ITypeResolver
+        {
+            public object Resolve(Type type)
+            {
+                // Nếu có constructor rỗng thì tạo bằng Activator
+                if (type.GetConstructor(Type.EmptyTypes) != null)
+                    return Activator.CreateInstance(type);
+
+                // Nếu không biết cách tạo thì trả null
+                return null;
+            }
+        }
         //format kiểu tycoon K/M/B/T với tối đa 2 số lẻ, và giữ hiển thị gọn cho số nhỏ. 
         // Ví dụ: 999 -> "999", 1500 -> "1.5K", 2000000 -> "2M", 3500000000 -> "3.5B"
         public static string FormatNumber(double value)

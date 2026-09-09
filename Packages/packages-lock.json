@@ -21,6 +21,13 @@
       "dependencies": {},
       "hash": "8a8fa5a9659a6d63f196391c71e06c4286c8acd7"
     },
+    "com.doantuan.easydi": {
+      "version": "https://github.com/wakawa2003/EasyDI-Core-upm.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "8be77707a9ac37040ca88626695261fa10686c87"
+    },
     "com.unity.2d.animation": {
       "version": "13.0.5",
       "depth": 1,

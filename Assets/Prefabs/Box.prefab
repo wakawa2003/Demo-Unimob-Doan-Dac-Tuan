@@ -42,6 +42,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6471108813305689552}
   - component: {fileID: 2821112218749469321}
+  - component: {fileID: 2043902062810952214}
   m_Layer: 0
   m_Name: Box
   m_TagString: Untagged
@@ -82,8 +83,26 @@ MonoBehaviour:
   UIPivot: {fileID: 6086275488602984093}
   txtName: {fileID: 746697569703158303}
   txtCostToBuild: {fileID: 2499601542418899018}
+  btnUnlock: {fileID: 5321168641889910768}
   Name: Box 1
   CostToUnBox: 40
+  OnPointerClick:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &2043902062810952214
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5011454522087793344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09e869dbc9250ad409062faa29c38a9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EasyDI::EasyDI.GameObjectContext
+  IsAutoSearchInstallerInThisGameObject: 1
+  MonoInstaller: []
 --- !u!1 &6042379696883025041
 GameObject:
   m_ObjectHideFlags: 0
@@ -340,6 +359,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 1201501036871561121, guid: bd3f29c6f2c0d4bcea19079314214c85, type: 3}
   m_PrefabInstance: {fileID: 6006560231831623176}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5321168641889910768 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1910370783126120952, guid: bd3f29c6f2c0d4bcea19079314214c85, type: 3}
+  m_PrefabInstance: {fileID: 6006560231831623176}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c8b7d51bc6111c4dad4f113260bdab6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TuanTool.ButtonSyncWithText
 --- !u!1 &6086275488602984093 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 517172867437615253, guid: bd3f29c6f2c0d4bcea19079314214c85, type: 3}

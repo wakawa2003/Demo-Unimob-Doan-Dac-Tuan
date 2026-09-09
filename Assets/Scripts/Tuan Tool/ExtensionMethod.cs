@@ -1,7 +1,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using UniRx;
 using UnityEngine;
 
 namespace TuanTool
@@ -101,11 +100,6 @@ namespace TuanTool
                 Debug.LogError("Khong co phan tu trong mang!");
                 return -1;
             }
-        }
-
-        public static System.IObservable<bool> IsAliveAsObservable(this ParticleSystem particle, bool whereBool)
-        {
-            return particle.ObserveEveryValueChanged(_ => _.IsAlive(true) && particle != null).Where(_ => _ == whereBool);
         }
 
     }
