@@ -14,6 +14,7 @@ namespace MyGameNamespace
 
         void Start()
         {
+            Input.simulateMouseWithTouches = true;
             SpawnNewCustomer(initPosSpawnCustomer.position, initPosSpawnCustomer.rotation, 0).Forget();
         }
 

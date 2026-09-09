@@ -13,9 +13,17 @@ namespace MyGameNamespace
 
         Sequence tweenMove;
         CancellationTokenSource moveCts;
+        bool isCarry;
+        bool isEmpty;
+
 
         public async UniTask MoveTotarget(Transform transformTarget, float time, CancellationToken cancellationToken)
         {
+            Animator.SetBool("IsMove", true);
+            Animator.SetBool("IsCarryMove", isCarry);
+            Animator.SetBool("IsEmpty", isEmpty);
+
+
             // Hủy task cũ
             moveCts?.Cancel();
             moveCts?.Dispose();
@@ -38,6 +46,8 @@ namespace MyGameNamespace
             {
                 tweenMove?.Kill();
             }
+            Animator.SetBool("IsMove", false);
+
         }
     }
 }
