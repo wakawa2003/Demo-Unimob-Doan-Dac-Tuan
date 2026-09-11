@@ -15,4 +15,4 @@ MonoBehaviour:
   <CostToUpgrade>k__BackingField: 2000
   <Level>k__BackingField: 10
   <CoinEarn>k__BackingField: 3000
-  <Duration>k__BackingField: 5
+  <Duration>k__BackingField: 1.5

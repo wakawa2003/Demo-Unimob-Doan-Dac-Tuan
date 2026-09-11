@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f8a60b1a9a004ad8a50899b2e660408, type: 3}
   m_Name: Plant Configs Level 1
   m_EditorClassIdentifier: Assembly-CSharp::MyGameNamespace.PlantLevelConfigs
+  <CostToUpgrade>k__BackingField: 0
   <Level>k__BackingField: 1
   <CoinEarn>k__BackingField: 1000
-  <Duration>k__BackingField: 10
+  <Duration>k__BackingField: 3

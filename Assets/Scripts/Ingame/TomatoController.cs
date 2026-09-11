@@ -1,12 +1,10 @@
 using System;
+using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
-using R3;
 using UniState;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace MyGameNamespace
 {
@@ -15,20 +13,18 @@ namespace MyGameNamespace
 
         [SerializeField] private GameObject[] bodyObjectList;
         IStateMachine stateMachine = new StateMachine();
-        UnityEvent<Transform[]> OnSetSpawn;
-        UnityEvent<Transform[], ICarrier> OnSetOwner;
+        IdleState idleState;
+        CarryingState carryingState;
 
         void Awake()
         {
-            OnSetSpawn = new();
-            OnSetOwner = new();
 
             stateMachine.SetResolver(new GameUtils.DefaultResolver());
             stateMachine.Execute<IdleState, TomatoController>(this, destroyCancellationToken);
         }
 
-        public void SetSpawn(Transform[] posList) => OnSetSpawn?.Invoke(posList);
-        public void SetOwner(Transform[] posList, ICarrier owner) => OnSetOwner?.Invoke(posList, owner);
+        public void SetSpawn(Transform[] posList) => idleState.SetSpawn(posList);
+        public async UniTask SetOwner(Transform[] posList, ICarrier owner, CancellationToken cancellationToken) => await (idleState == null ? UniTask.CompletedTask : idleState.SetOwner(posList, owner, cancellationToken));
 
         public class IdleState : StateBase<TomatoController>
         {
@@ -36,33 +32,31 @@ namespace MyGameNamespace
             Sequence animMove;
             public override UniTask Initialize(CancellationToken token)
             {
-                Debug.Log($"Initialize");
-                Payload.OnSetSpawn.AddListener(SetSpawn);
+                Debug.Log($"Initialize IdleState");
+                Payload.idleState = this;
                 return base.Initialize(token);
             }
 
             public override UniTask Exit(CancellationToken token)
             {
-
-                Payload.OnSetSpawn.RemoveListener(SetSpawn);
+                Debug.Log($"Exit IdleState");
+                Payload.idleState = null;
                 return base.Exit(token);
             }
 
             public override async UniTask<StateTransitionInfo> Execute(CancellationToken token)
             {
-                var a = await Payload.OnSetOwner.AsObservable().FirstAsync();
-                Debug.Log($"OnSetOwner");
-                animMove = DOTween.Sequence();
-                var listPos = a.Arg0;
-                for (int i = 0; i < listPos.Length; i++)
+                while (true)
                 {
-                    animMove.Join(Payload.bodyObjectList[i].transform.DOMove(listPos[i].transform.position, 0.3f));
+                    await UniTask.NextFrame();
                 }
+
                 return await UniTask.FromResult(Transition.GoBack());
             }
 
-            void SetSpawn(Transform[] posList)
+            public void SetSpawn(Transform[] posList)
             {
+                Debug.Log($"SetSpawn");
                 for (int i = 0; i < posList.Length; i++)
                 {
                     var item = posList[i];
@@ -73,9 +67,35 @@ namespace MyGameNamespace
                 }
             }
 
+            public async UniTask SetOwner(Transform[] listPos, ICarrier owner, CancellationToken cancellationToken)
+            {
+
+                Debug.Log($"OnSetOwner");
+                animMove = DOTween.Sequence();
+                for (int i = 0; i < listPos.Length; i++)
+                {
+                    animMove.Join(Payload.bodyObjectList[i].transform.DOMove(listPos[i].transform.position, 0.3f));
+                    Payload.bodyObjectList[i].transform.SetParent(listPos[i]);
+                }
+                Payload.transform.SetParent(listPos.First());
+
+                await animMove.AsyncWaitForCompletion().AsUniTask().AttachExternalCancellation(cancellationToken);
+            }
         }
         public class CarryingState : StateBase<TomatoController>
         {
+
+            public override UniTask Initialize(CancellationToken token)
+            {
+                Payload.carryingState = this;
+                return base.Initialize(token);
+            }
+
+            public override UniTask Exit(CancellationToken token)
+            {
+                Payload.carryingState = null;
+                return base.Exit(token);
+            }
             public override async UniTask<StateTransitionInfo> Execute(CancellationToken token)
             {
                 return await UniTask.FromResult(Transition.GoBack());
