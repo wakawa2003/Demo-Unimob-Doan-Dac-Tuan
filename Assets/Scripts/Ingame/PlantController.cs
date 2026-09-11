@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using AYellowpaper;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using R3;
+using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -10,10 +12,14 @@ using UnityEngine.UI;
 
 namespace MyGameNamespace
 {
-    public class PlantController : MonoBehaviour, IPlant, IPointerClickHandler
+    public class PlantController : MonoBehaviour, IPlant, IPointerClickHandler, ICarrier
     {
         [Header("Config")]
         [SerializeField] private List<InterfaceReference<ILevelPlant>> levelConfigList;
+
+        [Header("Carry Settings")]
+        [SerializeField] private GameObject carryable;
+        [SerializeField] private Transform[] carryPositionList;
 
         [Header("STATS")]
         [SerializeField] private TMP_Text txtCoinEarn;
@@ -30,18 +36,21 @@ namespace MyGameNamespace
         [field: SerializeField] public float Duration { get; set; }
         [field: SerializeField] public string ResourcesID { get; set; } = "resource_1";
         public List<ILevelPlant> LevelPlants { get => levelConfigList.ConvertAll(_ => _.Value); }
+        public ICarryable Carryable => carryable.GetComponent<ICarryable>();
 
-        async void Awake()
+        void Awake()
         {
             constructionUpgradwView.gameObject.SetActive(false);
-            viewStats.gameObject.SetActive(false);
-            viewStats.transform.localScale = Vector3.zero;
             SetLevel(levelConfigList[0].Value);
 
-            await UniTask.WaitForSeconds(0.5f);
-
             viewStats.gameObject.SetActive(true);
-            viewStats.transform.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack);
+            viewStats.transform.localScale = Vector3.zero;
+            viewStats.transform.DOScale(Vector3.one, 0.3f).SetDelay(0.5f).SetEase(Ease.OutBack);
+        }
+
+        void Start()
+        {
+            Carryable.SetSpawn(carryPositionList);
         }
 
         void LateUpdate()

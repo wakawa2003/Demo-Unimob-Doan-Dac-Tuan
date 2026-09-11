@@ -434,6 +434,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 3326547540028690111, guid: 22980ed0041e54468a524bb3e53c1f42, type: 3}
+      propertyPath: carryable._underlyingValue
+      value: 
+      objectReference: {fileID: 591655018}
+    - target: {fileID: 3326547540028690111, guid: 22980ed0041e54468a524bb3e53c1f42, type: 3}
       propertyPath: <ResourcesID>k__BackingField
       value: resource_4
       objectReference: {fileID: 0}
@@ -443,7 +447,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5626556437748558997, guid: 22980ed0041e54468a524bb3e53c1f42, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5736124936541197197, guid: 22980ed0041e54468a524bb3e53c1f42, type: 3}
       propertyPath: m_LocalPosition.x
@@ -495,6 +499,17 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 5626556437748558997, guid: 22980ed0041e54468a524bb3e53c1f42, type: 3}
   m_PrefabInstance: {fileID: 550950479}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &591655018 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2746007145630446889, guid: 22980ed0041e54468a524bb3e53c1f42, type: 3}
+  m_PrefabInstance: {fileID: 550950479}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa865dad2b09e4505b3335172b6f68b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MyGameNamespace.TomatoController
 --- !u!4 &599532389 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4815083280070344826, guid: 22a853b12f2114bc39874a3da3615686, type: 3}

@@ -6,7 +6,7 @@ namespace MyGameNamespace
 {
     public interface IPlant
     {
-
+        public ICarryable Carryable { get; }
         public string ResourcesID { get; set; }
         public Transform transform { get; }
         public void SetLevel(ILevelPlant levelPlant);
