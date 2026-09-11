@@ -4,6 +4,7 @@ using System.Threading;
 using AYellowpaper;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -19,6 +20,7 @@ namespace MyGameNamespace
         [Header("Carry Settings")]
         [SerializeField] private GameObject carryablePrefabs;
         [SerializeField] private Transform[] carryPositionList;
+        [SerializeField] private Transform positionTakeCarryable;
 
         [Header("STATS")]
         [SerializeField] private TMP_Text txtCoinEarn;
@@ -35,8 +37,7 @@ namespace MyGameNamespace
         [field: SerializeField] public float Duration { get; set; }
         [field: SerializeField] public string ResourcesID { get; set; } = "resource_1";
         public List<ILevelPlant> LevelPlants { get => levelConfigList.ConvertAll(_ => _.Value); }
-        public ICarryable Carryable { get; private set; }
-        ICarryable ICarrier.Carryable { get => Carryable; set => Carryable = value; }
+        public ICarryable Carryable { get; set; }
 
         float prevSpawnCarry;
 
@@ -55,16 +56,20 @@ namespace MyGameNamespace
         void Update()
         {
             //handle spawn carryable
-            if (Time.time >= prevSpawnCarry + Duration && Carryable == null)
+            if ((Time.time >= prevSpawnCarry + Duration) && Carryable == null)
             {
                 Debug.Log($"spawn Tomato");
                 var newCarryObject = Instantiate(carryablePrefabs, transform);
                 Carryable = newCarryObject.GetComponent<ICarryable>();
-                Carryable.SetSpawn(carryPositionList);
-                prevSpawnCarry = Time.time;
+                Carryable.Setup(this, carryPositionList);
+                EventDispatcher.OnCarryableSpawneed?.Invoke(new(Carryable, positionTakeCarryable));
             }
         }
-
+        [Button]
+        void Log()
+        {
+            Debug.Log($"carryable is null: {Carryable == null}");
+        }
 
         void LateUpdate()
         {
@@ -87,8 +92,13 @@ namespace MyGameNamespace
             constructionUpgradwView.gameObject.SetActive(true);
             constructionUpgradwView.UpdateView(this);
         }
-
-        public UniTask GetCarryable(ICarryable carryable, CancellationToken cancellationToken)
+        public void TakeOffCarryable()
+        {
+            Debug.Log($"TakeOffCarryable", this);
+            prevSpawnCarry = Time.time;
+            Carryable = null;
+        }
+        public UniTask TakeCarryable(ICarryable carryable, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

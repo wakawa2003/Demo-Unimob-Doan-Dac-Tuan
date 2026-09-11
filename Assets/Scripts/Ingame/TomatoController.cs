@@ -15,6 +15,7 @@ namespace MyGameNamespace
         IStateMachine stateMachine = new StateMachine();
         IdleState idleState;
         CarryingState carryingState;
+        ICarrier owner;
 
         void Awake()
         {
@@ -23,7 +24,7 @@ namespace MyGameNamespace
             stateMachine.Execute<IdleState, TomatoController>(this, destroyCancellationToken);
         }
 
-        public void SetSpawn(Transform[] posList) => idleState.SetSpawn(posList);
+        public void Setup(ICarrier owner, Transform[] posList) => idleState.Setup(owner, posList);
         public async UniTask SetOwner(Transform[] posList, ICarrier owner, CancellationToken cancellationToken) => await (idleState == null ? UniTask.CompletedTask : idleState.SetOwner(posList, owner, cancellationToken));
 
         public class IdleState : StateBase<TomatoController>
@@ -54,9 +55,10 @@ namespace MyGameNamespace
                 return await UniTask.FromResult(Transition.GoBack());
             }
 
-            public void SetSpawn(Transform[] posList)
+            public void Setup(ICarrier owner, Transform[] posList)
             {
                 Debug.Log($"SetSpawn");
+                Payload.owner = owner;
                 for (int i = 0; i < posList.Length; i++)
                 {
                     var item = posList[i];
@@ -67,10 +69,13 @@ namespace MyGameNamespace
                 }
             }
 
-            public async UniTask SetOwner(Transform[] listPos, ICarrier owner, CancellationToken cancellationToken)
+            public async UniTask SetOwner(Transform[] listPos, ICarrier newOwner, CancellationToken cancellationToken)
             {
 
                 Debug.Log($"OnSetOwner");
+                if (Payload.owner != null)
+                    Payload.owner.TakeOffCarryable();
+                Payload.owner = newOwner;
                 animMove = DOTween.Sequence();
                 for (int i = 0; i < listPos.Length; i++)
                 {

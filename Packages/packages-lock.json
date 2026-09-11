@@ -23,13 +23,6 @@
       "dependencies": {},
       "hash": "06067cd4c83e372310d6f79d1c625f6870ff7a2a"
     },
-    "com.dbrizov.naughtyattributes": {
-      "version": "https://github.com/dbrizov/NaughtyAttributes.git#upm",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {},
-      "hash": "8a8fa5a9659a6d63f196391c71e06c4286c8acd7"
-    },
     "com.doantuan.easydi": {
       "version": "https://github.com/wakawa2003/EasyDI-Core-upm.git",
       "depth": 0,
@@ -165,6 +158,15 @@
         "com.unity.modules.unitywebrequest": "1.0.0",
         "com.unity.scriptablebuildpipeline": "2.6.1",
         "com.unity.modules.unitywebrequestassetbundle": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.ai.navigation": {
+      "version": "2.0.14",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.modules.ai": "1.0.0"
       },
       "url": "https://packages.unity.com"
     },

@@ -8,7 +8,8 @@ namespace MyGameNamespace
 {
     public interface ICarryable
     {
-        public void SetSpawn(Transform[] posList);
+
+        public void Setup(ICarrier owner, Transform[] posList);
         public UniTask SetOwner(Transform[] posList, ICarrier owner, CancellationToken cancellationToken);
 
 

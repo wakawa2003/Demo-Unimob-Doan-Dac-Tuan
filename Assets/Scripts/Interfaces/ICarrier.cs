@@ -8,7 +8,9 @@ namespace MyGameNamespace
 {
     public interface ICarrier
     {
-        public UniTask GetCarryable(ICarryable carryable, CancellationToken cancellationToken);
+
+        public void TakeOffCarryable();
+        public UniTask TakeCarryable(ICarryable carryable, CancellationToken cancellationToken);
         public ICarryable Carryable { get; set; }
     }
 }
