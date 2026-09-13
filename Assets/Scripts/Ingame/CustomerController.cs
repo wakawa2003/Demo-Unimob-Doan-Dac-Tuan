@@ -35,14 +35,8 @@ namespace MyGameNamespace
             stateMachine.Execute<IdleState, CustomerController>(this, destroyCancellationToken);
         }
 
-        public void SetPosition(Vector3 target, Vector3 rotation)
-        {
-            transform.SetPositionAndRotation(target, Quaternion.Euler(rotation));
 
-            onGotoPosition?.Invoke(target);
-        }
-
-        public async UniTask RunToPosition(Vector3 target, Vector3 rotationAtEnd, CancellationToken cancellationToken)
+        public async UniTask RunToPosition(Vector3 target, Vector3 rotationAtEnd, bool isInstant, CancellationToken cancellationToken)
         {
             if (agent.SetDestination(target))
             {
@@ -159,7 +153,7 @@ namespace MyGameNamespace
 
             public async override UniTask<StateTransitionInfo> Execute(CancellationToken token)
             {
-                await Payload.RunToPosition(Payload.endPos, Vector3.forward, token);
+                await Payload.RunToPosition(Payload.endPos, Vector3.forward, false, token);
                 Destroy(Payload.gameObject);
                 Debug.Log($"Customer hoan thanh!!!!!");
                 return Transition.GoToExit();

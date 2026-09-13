@@ -1,10 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
-using R3;
 using Sirenix.OdinInspector;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -31,6 +30,7 @@ namespace MyGameNamespace
             EventDispatcher.OnCarryableSpawneed.RemoveListener(OnCarryableSpawneed);
             EventDispatcher.OnDeliverHasCarryable.RemoveListener(OnDeliverHasCarryable);
             EventDispatcher.OnCustomerReadyToTake.RemoveListener(OnCustomerReadyToTake);
+            EventDispatcher.onCustomerTakeCarryable.RemoveListener(onCustomerTakeCarryable);
             EventDispatcher.OnCustomerInit.RemoveListener(onCustomerInit);
             EventDispatcher.OnDeliverInit.RemoveListener(onDeliverInit);
         }
@@ -43,10 +43,16 @@ namespace MyGameNamespace
             EventDispatcher.OnCarryableSpawneed.AddListener(OnCarryableSpawneed);
             EventDispatcher.OnDeliverHasCarryable.AddListener(OnDeliverHasCarryable);
             EventDispatcher.OnCustomerReadyToTake.AddListener(OnCustomerReadyToTake);
+            EventDispatcher.onCustomerTakeCarryable.AddListener(onCustomerTakeCarryable);
             EventDispatcher.OnCustomerInit.AddListener(onCustomerInit);
             EventDispatcher.OnDeliverInit.AddListener(onDeliverInit);
 
-            SpawnNewCustomer(initPosSpawnCustomer.position, initPosSpawnCustomer.rotation, 0).Forget();
+            SpawnNewCustomer(initPosSpawnCustomer.position, initPosSpawnCustomer.rotation, true).Forget();
+        }
+
+        private void onCustomerTakeCarryable((ICustomer customer, ICarrier carrier, ICarryable carryable) data)
+        {
+            SpawnNewCustomer(initPosSpawnCustomer.position, initPosSpawnCustomer.rotation, false).Forget();
         }
 
         private void onDeliverInit(IDeliver arg0)
@@ -64,7 +70,7 @@ namespace MyGameNamespace
             Debug.Log($"OnDeliverHasCarryable");
             if (!DeliverWaitingList.Contains(arg0.deliver))
                 DeliverWaitingList.Add(arg0.deliver);
-            CheckCollect();
+            CheckCollect().Forget();
         }
 
         private void OnCustomerReadyToTake(ICustomer customer)
@@ -72,10 +78,10 @@ namespace MyGameNamespace
             Debug.Log($"OnCustomerReadyToTake");
             if (!CustomerWaitingList.Contains(customer))
                 CustomerWaitingList.Add(customer);
-            CheckCollect();
+            CheckCollect().Forget();
         }
 
-        private async Task CheckCollect()
+        private async UniTask CheckCollect()
         {
             if (CustomerWaitingList.Count() > 0 && DeliverWaitingList.Count() > 0)
             {
@@ -87,9 +93,21 @@ namespace MyGameNamespace
                 DeliverWaitingList.Remove(deliver);
 
                 //tim ra slot chua customer
-                var slotServerData = this.slotServerData.ToList().Find(_ => _.Customer.transform == customer.transform);
-                await deliver.RunToPosition(slotServerData.PositonDeliver.position, slotServerData.PositonDeliver.eulerAngles, destroyCancellationToken);
+                var s = this.slotServerData.ToList().Find(_ =>
+                {
+                    if (_.Customer != null && _.Deliver == null)
+                        return _.Customer?.transform == customer.transform;
+                    return false;
+                });
+
+
+                s.Deliver = deliver;
+                if (s == null)
+                    Debug.LogError($"Loi khong tim thay slot");
+                await deliver.RunToPosition(s.PositonDeliver.position, s.PositonDeliver.eulerAngles, destroyCancellationToken);
                 await customer.TakeCarryable(deliver, deliver.Carryable, destroyCancellationToken);
+                s.Customer = null;
+                s.Deliver = null;
             }
         }
 
@@ -105,15 +123,18 @@ namespace MyGameNamespace
             await newDeliver.GetComponent<ICarrier>().TakeCarryable(data.carryable.Owner, data.carryable, destroyCancellationToken);
         }
 
-        public async UniTask<SlotServeData> SpawnNewCustomer(Vector3 startPos, Quaternion rotation, float duration)
+        public async UniTask<SlotServeData> SpawnNewCustomer(Vector3 startPos, Quaternion rotation, bool isInstant)
         {
             var emptySlot = slotServerData.ToList().Find(_ => _.Customer == null);
             if (emptySlot != null)
             {
-                var newCustomer = Instantiate(customerPrefabs, startPos, rotation);
+
+                var pos = isInstant ? emptySlot.PositionCustomer.position : startPos;
+                var newCustomer = Instantiate(customerPrefabs, pos, emptySlot.PositionCustomer.transform.rotation);
                 emptySlot.Customer = newCustomer;
                 newCustomer.GetComponent<ICustomer>().Setup(endPosCustomer.position);
-                newCustomer.GetComponent<ICustomer>().SetPosition(emptySlot.PositionCustomer.position, emptySlot.PositionCustomer.transform.eulerAngles);
+
+                await newCustomer.GetComponent<ICustomer>().RunToPosition(emptySlot.PositionCustomer.position, emptySlot.PositionCustomer.transform.eulerAngles, isInstant, destroyCancellationToken);
             }
             return emptySlot;
         }
@@ -125,7 +146,7 @@ namespace MyGameNamespace
             [ReadOnly] public GameObject Customer;
             [FormerlySerializedAs("Position")]
             public Transform PositionCustomer;
-            [ReadOnly] public GameObject Deliver;
+            [ReadOnly] public ICarrier Deliver;
             public Transform PositonDeliver;
         }
     }
