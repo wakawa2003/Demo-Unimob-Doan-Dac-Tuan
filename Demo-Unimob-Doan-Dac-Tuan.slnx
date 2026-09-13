@@ -46,6 +46,7 @@
   <Project Path="Unity.Burst.CodeGen.csproj" />
   <Project Path="Unity.Addressables.DocExampleCode.Editor.Tests.csproj" />
   <Project Path="IngameDebugConsole.Runtime.csproj" />
+  <Project Path="Assembly-CSharp.csproj" />
   <Project Path="Unity.PerformanceTesting.csproj" />
   <Project Path="Unity.2D.Tilemap.Extras.Editor.csproj" />
   <Project Path="Unity.InternalAPIEngineBridge.013.csproj" />
@@ -65,7 +66,6 @@
   <Project Path="Unity.2D.Tooling.Editor.csproj" />
   <Project Path="Unity.AutoGroupGenerator.Editor.csproj" />
   <Project Path="Unity.InternalAPIEditorBridge.001.csproj" />
-  <Project Path="Assembly-CSharp.csproj" />
   <Project Path="Unity.AI.Navigation.Updater.csproj" />
   <Project Path="UnityEditor.UI.csproj" />
   <Project Path="Unity.RenderPipelines.Universal.2D.Editor.Overrides.csproj" />
@@ -148,13 +148,13 @@
   <Project Path="UniState.Player.csproj" />
   <Project Path="Unity.UnifiedRayTracing.Runtime.Player.csproj" />
   <Project Path="IngameDebugConsole.Runtime.Player.csproj" />
+  <Project Path="Assembly-CSharp.Player.csproj" />
   <Project Path="Unity.PerformanceTesting.Player.csproj" />
   <Project Path="Unity.InternalAPIEngineBridge.013.Player.csproj" />
   <Project Path="Unity.TextMeshPro.Player.csproj" />
   <Project Path="UniTask.Linq.Player.csproj" />
   <Project Path="Unity.InternalAPIEngineBridge.001.Player.csproj" />
   <Project Path="Assembly-CSharp-firstpass.Player.csproj" />
-  <Project Path="Assembly-CSharp.Player.csproj" />
   <Project Path="R3.Unity.Player.csproj" />
   <Project Path="Unity.AppUI.MVVM.Player.csproj" />
   <Project Path="Unity.Muse.Behavior.Player.csproj" />

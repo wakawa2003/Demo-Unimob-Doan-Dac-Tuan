@@ -39,20 +39,8 @@ namespace MyGameNamespace
         public List<string> BuffPlantByPlantID_x2_List = new();
         public List<string> BuffPlantByPlantID_x3_List = new();
 
-
-        // public class BuffForPlant_x3 : BuffForPlant_x2_x3
-        // {
-        //     public override int getCoin()
-        //     {
-
-        //         var root = (this as IPlant).GetRoot();
-        //         var idPlantRoot = root.PlantID;
-        //         var f = BuffManager.Ins.BuffPlantByPlantID_x3_List.Find(_ => _ == idPlantRoot);
-        //         if (f != null)
-        //             return root._CoinEarn * 2;
-        //         return 0;
-        //     }
-        // }
+        public bool IsGlobalProfitX2 = false;
+        public bool IsGlobalProfitX3 = false;
 
         public class BuffForPlant_x2_x3 : IPlant
         {
@@ -84,15 +72,23 @@ namespace MyGameNamespace
                 // return 0;
                 var root = (this as IPlant).GetRoot();
                 var idResourcesRoot = root.PlantID;
-                int mul = 0;
+                int mul = 1;
+
                 var x2 = BuffManager.Ins.BuffPlantByPlantID_x2_List.Find(_ => _ == idResourcesRoot);
                 if (x2 != null)
-                    mul += 2;
+                    mul *= 2;
 
                 var x3 = BuffManager.Ins.BuffPlantByPlantID_x3_List.Find(_ => _ == idResourcesRoot);
                 if (x3 != null)
-                    mul += 3;
+                    mul *= 3;
 
+                if (BuffManager.Ins.IsGlobalProfitX2)
+                    mul *= 2;
+
+                if (BuffManager.Ins.IsGlobalProfitX3)
+                    mul *= 3;
+
+                mul -= 1;//phai tru di 1 don vi de bu vao gia tri goc
                 return root._CoinEarn * mul;
             }
 

@@ -546,6 +546,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MyGameNamespace.BuffManager
   BuffPlantByPlantID_x2_List: []
   BuffPlantByPlantID_x3_List: []
+  IsGlobalProfitX2: 0
+  IsGlobalProfitX3: 0
 --- !u!1001 &550950479
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1382,6 +1384,8 @@ MonoBehaviour:
   - _underlyingValue: {fileID: 11400000, guid: 6d223bb11fbae46d4a9830c8fe536732, type: 2}
   - _underlyingValue: {fileID: 11400000, guid: 36fa47562f7544bfdb4acf38dff845a1, type: 2}
   - _underlyingValue: {fileID: 11400000, guid: 263ac8ba29059462f946e398e9ca1c9c, type: 2}
+  - _underlyingValue: {fileID: 11400000, guid: d1ce71b8e9b814e48a467b0adb271eb6, type: 2}
+  - _underlyingValue: {fileID: 11400000, guid: 6bfb8903e91124223acee6b12966165d, type: 2}
   ResourceConfigs:
   - {fileID: 11400000, guid: 977e58c7e01374bf8a437b161c2a9b2f, type: 2}
   - {fileID: 11400000, guid: 711fa6617e9fb4dd18ca934d637ed349, type: 2}
