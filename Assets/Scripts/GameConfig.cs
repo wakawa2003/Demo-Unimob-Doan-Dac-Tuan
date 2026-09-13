@@ -1,4 +1,7 @@
+using System.Collections.Generic;
 using System.Linq;
+using AYellowpaper;
+using EasyDI;
 using UnityEngine;
 
 namespace MyGameNamespace
@@ -6,7 +9,21 @@ namespace MyGameNamespace
     public class GameConfig : MonoBehaviour
     {
 
+        [SerializeField] private List<InterfaceReference<IUpgradeStrategy>> upgradeList;
+
         public ResourceConfig[] ResourceConfigs;
+        public List<InterfaceReference<IUpgradeStrategy>> UpgradeList
+        {
+            get
+            {
+                var injector = FindAnyObjectByType<SceneContext>();
+                foreach (var item in upgradeList)
+                {
+                    injector.InjectFor(item.Value);
+                }
+                return upgradeList;
+            }
+        }
         #region Singleton
         private static GameConfig ins;
         public static GameConfig Ins
@@ -22,6 +39,7 @@ namespace MyGameNamespace
             }
             set => ins = value;
         }
+
         #endregion
 
         private void Awake()

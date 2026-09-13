@@ -29,12 +29,12 @@ namespace MyGameNamespace
             OnDiamondChange(new(userData.Diamond, userData.Diamond));
         }
 
-        private void OnDiamondChange((int Before, int after) arg0)
+        private void OnDiamondChange((long Before, long after) arg0)
         {
             txtDiamond.text = GameUtils.FormatNumber(arg0.after);
         }
 
-        private void OnCoinChange((int Before, int after) arg0)
+        private void OnCoinChange((long Before, long after) arg0)
         {
             txtCoin.text = GameUtils.FormatNumber(arg0.after);
         }

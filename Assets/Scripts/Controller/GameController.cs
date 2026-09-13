@@ -1,12 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using EasyDI;
-using Sirenix.OdinInspector;
 using TuanTool;
-using Unity.Collections;
-using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -54,19 +50,20 @@ namespace MyGameNamespace
             EventDispatcher.OnCustomerInit.AddListener(onCustomerInit);
             EventDispatcher.OnDeliverInit.AddListener(onDeliverInit);
 
-            SpawnNewCustomer(initPosSpawnCustomer.position, initPosSpawnCustomer.rotation, true).Forget();
+            // SpawnNewCustomer(initPosSpawnCustomer.position, initPosSpawnCustomer.rotation, true).Forget();
+            CheckSpawnCustomer(true).Forget();
         }
 
         private void onCustomerTakeCarryable((ICustomer customer, ICarrier carrier, ICarryable carryable) data)
         {
             var cost = data.carryable.GetComponent<ICostable>();
             userData.AddCoin(cost.Cost);
-            var slot = slotServerData.First(_ => _.Customer?.transform == data.customer.transform);
+            var slot = slotServerData.First(_ => _.IsUnlock && _.Customer?.transform == data.customer.transform);
             if (poolMannager == null)
                 Debug.LogError($"nulll");
             poolMannager.Instantiate("coinRewardFX", slot.PositionRewardCoin.position, slot.PositionRewardCoin.rotation).GetComponentInChildren<ParticleSystem>().Play(true);
-            SpawnNewCustomer(initPosSpawnCustomer.position, initPosSpawnCustomer.rotation, false).Forget();
-
+            // SpawnNewCustomer(initPosSpawnCustomer.position, initPosSpawnCustomer.rotation, false).Forget();
+            CheckSpawnCustomer(false).Forget();
         }
 
         private void onDeliverInit(IDeliver arg0)
@@ -109,7 +106,7 @@ namespace MyGameNamespace
                 //tim ra slot chua customer
                 var s = this.slotServerData.ToList().Find(_ =>
                 {
-                    if (_.Customer != null && _.Deliver == null)
+                    if (_.Customer != null && _.Deliver == null && _.IsUnlock)
                         return _.Customer?.transform == customer.transform;
                     return false;
                 });
@@ -126,7 +123,8 @@ namespace MyGameNamespace
                 await customer.TakeCarryable(deliver, deliver.Carryable, destroyCancellationToken);
                 s.Customer = null;
                 s.Deliver = null;
-                await CheckSpawnNewDeliver();
+
+                await UniTask.WhenAll(CheckSpawnNewDeliver(), CheckSpawnCustomer(false));
             }
         }
 
@@ -159,14 +157,27 @@ namespace MyGameNamespace
             }
         }
 
+        public async UniTask CheckSpawnCustomer(bool isInstant)
+        {
+            List<UniTask> uniTasks = new List<UniTask>();
+            foreach (var item in slotServerData)
+            {
+                if (item.IsUnlock)
+                    if (item.Customer == null)
+                        uniTasks.Add(SpawnNewCustomer(initPosSpawnCustomer.position, initPosSpawnCustomer.rotation, isInstant));
+            }
+
+            await UniTask.WhenAll(uniTasks);
+        }
+
         public async UniTask<SlotServeData> SpawnNewCustomer(Vector3 startPos, Quaternion rotation, bool isInstant)
         {
-            var emptySlot = slotServerData.ToList().Find(_ => _.Customer == null);
+            var emptySlot = slotServerData.ToList().Find(_ => _.IsUnlock && _.Customer == null);
             if (emptySlot != null)
             {
-
                 var pos = isInstant ? emptySlot.PositionCustomer.position : startPos;
-                var newCustomer = Instantiate(customerPrefabs, pos, emptySlot.PositionCustomer.transform.rotation);
+                var rot = isInstant ? emptySlot.PositionCustomer.rotation : rotation;
+                var newCustomer = Instantiate(customerPrefabs, pos, rot);
                 emptySlot.Customer = newCustomer;
                 newCustomer.GetComponent<ICustomer>().Setup(endPosCustomer.position);
 
@@ -175,6 +186,21 @@ namespace MyGameNamespace
             return emptySlot;
         }
 
+
+        public bool IsCanUnlockCustomer()
+        {
+            return slotServerData.Any(_ => _.IsUnlock == false);
+        }
+
+        public void UnlockMoreCustomer()
+        {
+            if (IsCanUnlockCustomer())
+            {
+                var find = slotServerData.First(_ => _.IsUnlock == false);
+                find.IsUnlock = true;
+                CheckSpawnCustomer(true).Forget();
+            }
+        }
 
 
         [System.Serializable]
@@ -190,6 +216,8 @@ namespace MyGameNamespace
         [System.Serializable]
         public class SlotServeData
         {
+
+            public bool IsUnlock = false;
             [Sirenix.OdinInspector.ReadOnly] public GameObject Customer;
             [FormerlySerializedAs("Position")]
             public Transform PositionCustomer;
