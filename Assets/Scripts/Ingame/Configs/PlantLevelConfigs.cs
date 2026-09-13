@@ -13,9 +13,9 @@ namespace MyGameNamespace
 
         public IPlant ApplyStrategy(IPlant plant)
         {
-            plant.CoinEarn = CoinEarn;
+            plant._CoinEarn = CoinEarn;
             plant.Level = Level;
-            plant.Duration = Duration;
+            plant._Duration = Duration;
             return plant;
         }
     }

@@ -4,6 +4,7 @@ using System.Threading;
 using AYellowpaper;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using EasyDI;
 using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
@@ -33,11 +34,17 @@ namespace MyGameNamespace
 
         public ILevelPlant LevelPlantStrategy { get; set; }
         [field: SerializeField] public int Level { get; set; }
-        [field: SerializeField] public int CoinEarn { get; set; }
-        [field: SerializeField] public float Duration { get; set; }
+        [field: SerializeField] public string PlantID { get; set; }
         [field: SerializeField] public string ResourcesID { get; set; } = "resource_1";
         public List<ILevelPlant> LevelPlants { get => levelConfigList.ConvertAll(_ => _.Value); }
         public ICarryable Carryable { get; set; }
+        [field: SerializeField] public int _CoinEarn { get; set; }
+        [field: SerializeField] public float _Duration { get; set; }
+        [Inject] public IPlant Decore { get; set; }
+        public IPlant PrevDecore { get; set; }
+        int CoinEarn => (this as IPlant).CoinEarn;
+        float Duration => (this as IPlant).Duration;
+
 
         float prevSpawnCarry;
 
@@ -66,6 +73,7 @@ namespace MyGameNamespace
                 newCarryObject.GetComponent<ICostable>().Setup(CoinEarn);
                 EventDispatcher.OnCarryableSpawneed?.Invoke(new(this, Carryable, positionTakeCarryable));
             }
+            UpdateStats();
         }
         [Button]
         void Log()
@@ -82,6 +90,11 @@ namespace MyGameNamespace
         {
             LevelPlantStrategy = levelPlant;
             LevelPlantStrategy.ApplyStrategy(this);
+            UpdateStats();
+        }
+
+        private void UpdateStats()
+        {
             txtCoinEarn.text = GameUtils.FormatNumber(CoinEarn);
             txtDuration.text = Duration.ToString() + "s";
             txtSpeedPerMinute.text = GameUtils.FormatNumber((int)(CoinEarn * 60 / Duration)) + "/min";
