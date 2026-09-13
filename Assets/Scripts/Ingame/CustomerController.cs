@@ -53,7 +53,6 @@ namespace MyGameNamespace
             animator.SetBool("IsMove", false);
             await transform.DORotate(rotationAtEnd, 0.2f).AsyncWaitForCompletion().AsUniTask().AttachExternalCancellation(cancellationToken);
             onGotoPosition?.Invoke(target);
-            Debug.Log($"chay toi noi");
         }
 
         public void TakeOffCarryableByAnother(ICarrier carrier)

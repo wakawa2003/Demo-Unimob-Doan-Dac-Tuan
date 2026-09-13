@@ -12,18 +12,9 @@ namespace MyGameNamespace
     {
 
         [SerializeField] private GameObject[] bodyObjectList;
-        IStateMachine stateMachine = new StateMachine();
-        IdleState idleState;
-        CarryingState carryingState;
         public ICarrier Owner { get; set; }
         public int Cost { get; set; }
         Sequence animMove;
-        void Awake()
-        {
-
-            stateMachine.SetResolver(new GameUtils.DefaultResolver());
-            stateMachine.Execute<IdleState, TomatoController>(this, destroyCancellationToken);
-        }
 
         public void Setup(int cost)
         {
@@ -40,99 +31,42 @@ namespace MyGameNamespace
                 animMove.Join(bodyObjectList[i].transform.DOScale(initScale, 0.7f).SetDelay((i) * 0.1f).SetEase(Ease.OutBack));
             }
         }
-        public void Setup(ICarrier owner, Transform[] posList) => idleState.Setup(owner, posList);
-        public async UniTask SetOwner(Transform[] posList, ICarrier owner, CancellationToken cancellationToken) => await (idleState == null ? UniTask.CompletedTask : idleState.SetOwner(posList, owner, cancellationToken));
-
-
-        public class IdleState : StateBase<TomatoController>
+        public void Setup(ICarrier owner, Transform[] posList)
         {
-
-            Sequence animMove;
-            public override UniTask Initialize(CancellationToken token)
+            Debug.Log($"SetSpawn");
+            Owner = owner;
+            for (int i = 0; i < posList.Length; i++)
             {
+                var item = posList[i];
 
-                Debug.Log($"Initialize IdleState");
-                Payload.idleState = this;
-                return base.Initialize(token);
-            }
-
-            public override UniTask Exit(CancellationToken token)
-            {
-                Debug.Log($"Exit IdleState");
-                Payload.idleState = null;
-                return base.Exit(token);
-            }
-
-            public override async UniTask<StateTransitionInfo> Execute(CancellationToken token)
-            {
-
-                while (true)
-                {
-                    await UniTask.NextFrame();
-                }
-
-                return await UniTask.FromResult(Transition.GoBack());
-            }
-
-            public void Setup(ICarrier owner, Transform[] posList)
-            {
-                Debug.Log($"SetSpawn");
-                Payload.Owner = owner;
-                for (int i = 0; i < posList.Length; i++)
-                {
-                    var item = posList[i];
-
-                    Payload.bodyObjectList[i].transform.SetParent(item, false);
-                    Payload.bodyObjectList[i].transform.SetPositionAndRotation(item.position, item.rotation);
-                    Payload.bodyObjectList[i].transform.localPosition = Vector3.zero;
-                }
-            }
-
-            public async UniTask SetOwner(Transform[] listPos, ICarrier newOwner, CancellationToken cancellationToken)
-            {
-
-                Debug.Log($"OnSetOwner");
-                if (Payload.Owner != null)
-                    Payload.Owner.TakeOffCarryableByAnother(newOwner);
-                Payload.Owner = newOwner;
-                Payload.animMove?.Kill(true);
-                animMove = DOTween.Sequence();
-                for (int i = 0; i < listPos.Length; i++)
-                {
-                    animMove.Join(Payload.bodyObjectList[i].transform.DOShakeScale(0.2f, new Vector3(0.2f, 0.4f, 0.2f), 1).SetDelay(i * 0.1f));
-                    animMove.Join(Payload.bodyObjectList[i].transform.DOJump(listPos[i].transform.position, 0.6f, 1, 0.5f).SetDelay((i + 1) * 0.1f));
-
-                    // animMove.Join(Payload.bodyObjectList[i].transform.DOMove(listPos[i].transform.position, 0.3f));
-                    // animMove.Join(Payload.bodyObjectList[i].transform.DOMove(listPos[i].transform.position + Vector3.up * 5, 0.15f).SetLoops(1, LoopType.Yoyo)); 
-                    Payload.bodyObjectList[i].transform.SetParent(listPos[i]);
-                }
-                Payload.transform.SetParent(listPos.First());
-
-                await animMove.AsyncWaitForCompletion().AsUniTask().AttachExternalCancellation(cancellationToken);
+                bodyObjectList[i].transform.SetParent(item, false);
+                bodyObjectList[i].transform.SetPositionAndRotation(item.position, item.rotation);
+                bodyObjectList[i].transform.localPosition = Vector3.zero;
             }
         }
-        public class CarryingState : StateBase<TomatoController>
+
+        public async UniTask SetOwner(Transform[] listPos, ICarrier newOwner, CancellationToken cancellationToken)
         {
 
-            public override UniTask Initialize(CancellationToken token)
+            Debug.Log($"OnSetOwner");
+            if (Owner != null)
+                Owner.TakeOffCarryableByAnother(newOwner);
+            Owner = newOwner;
+            animMove?.Kill(true);
+            animMove = DOTween.Sequence();
+            for (int i = 0; i < listPos.Length; i++)
             {
-                Payload.carryingState = this;
-                return base.Initialize(token);
-            }
+                animMove.Join(bodyObjectList[i].transform.DOShakeScale(0.2f, new Vector3(0.2f, 0.4f, 0.2f), 1).SetDelay(i * 0.1f));
+                animMove.Join(bodyObjectList[i].transform.DOJump(listPos[i].transform.position, 0.6f, 1, 0.5f).SetDelay((i + 1) * 0.1f));
 
-            public override UniTask Exit(CancellationToken token)
-            {
-                Payload.carryingState = null;
-                return base.Exit(token);
+                // animMove.Join(Payload.bodyObjectList[i].transform.DOMove(listPos[i].transform.position, 0.3f));
+                // animMove.Join(Payload.bodyObjectList[i].transform.DOMove(listPos[i].transform.position + Vector3.up * 5, 0.15f).SetLoops(1, LoopType.Yoyo)); 
+                bodyObjectList[i].transform.SetParent(listPos[i]);
             }
-            public override async UniTask<StateTransitionInfo> Execute(CancellationToken token)
-            {
-                return await UniTask.FromResult(Transition.GoBack());
-            }
+            transform.SetParent(listPos.First());
 
-
+            await animMove.AsyncWaitForCompletion().AsUniTask().AttachExternalCancellation(cancellationToken);
         }
-
 
     }
 }

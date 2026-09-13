@@ -1053,6 +1053,18 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1201501036871561121, guid: bd3f29c6f2c0d4bcea19079314214c85, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1201501036871561121, guid: bd3f29c6f2c0d4bcea19079314214c85, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1201501036871561121, guid: bd3f29c6f2c0d4bcea19079314214c85, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1201501036871561121, guid: bd3f29c6f2c0d4bcea19079314214c85, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -1129,6 +1141,14 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5846382487808202088, guid: bd3f29c6f2c0d4bcea19079314214c85, type: 3}
+      propertyPath: m_fontSize
+      value: 34.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5846382487808202088, guid: bd3f29c6f2c0d4bcea19079314214c85, type: 3}
+      propertyPath: m_fontStyle
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5846382487808202088, guid: bd3f29c6f2c0d4bcea19079314214c85, type: 3}
       propertyPath: m_ActiveFontFeatures.Array.size
       value: 0
       objectReference: {fileID: 0}
@@ -1138,7 +1158,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6620486936571906819, guid: bd3f29c6f2c0d4bcea19079314214c85, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 73.68
+      value: 79.84
       objectReference: {fileID: 0}
     - target: {fileID: 6941570961312066544, guid: bd3f29c6f2c0d4bcea19079314214c85, type: 3}
       propertyPath: delay
@@ -1167,6 +1187,10 @@ PrefabInstance:
     - target: {fileID: 7903536501494897969, guid: bd3f29c6f2c0d4bcea19079314214c85, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8208875674965538370, guid: bd3f29c6f2c0d4bcea19079314214c85, type: 3}
+      propertyPath: m_fontStyle
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8208875674965538370, guid: bd3f29c6f2c0d4bcea19079314214c85, type: 3}
       propertyPath: m_ActiveFontFeatures.Array.size

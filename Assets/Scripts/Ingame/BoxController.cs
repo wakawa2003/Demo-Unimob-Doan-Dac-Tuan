@@ -97,8 +97,6 @@ namespace MyGameNamespace
 
             public void OnPointerClick(PointerEventData eventData)
             {
-                Debug.Log($"click");
-
                 // Bật UI
                 boxController.UIContainer.gameObject.SetActive(true);
 
