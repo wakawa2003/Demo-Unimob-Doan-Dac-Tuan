@@ -74,7 +74,7 @@ namespace MyGameNamespace
 
                 Debug.Log($"OnSetOwner");
                 if (Payload.Owner != null)
-                    Payload.Owner.TakeOffCarryable();
+                    Payload.Owner.TakeOffCarryableByAnother(newOwner);
                 Payload.Owner = newOwner;
                 animMove = DOTween.Sequence();
                 for (int i = 0; i < listPos.Length; i++)

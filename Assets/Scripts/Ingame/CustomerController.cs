@@ -56,7 +56,7 @@ namespace MyGameNamespace
             Debug.Log($"chay toi noi");
         }
 
-        public void TakeOffCarryable()
+        public void TakeOffCarryableByAnother(ICarrier carrier)
         {
             throw new NotImplementedException();
         }

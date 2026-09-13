@@ -1,6 +1,5 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using Cysharp.Threading.Tasks.Triggers;
 using DG.Tweening;
 using R3;
 using UniState;
@@ -16,6 +15,7 @@ namespace MyGameNamespace
         [SerializeField] private Transform[] listCarryablePosition;
         [SerializeField] private Animator animator;
         public ICarryable Carryable { get; set; }
+
         IStateMachine stateMachine = new StateMachine();
         InitState initState;
         DeliveringState deliveringState;
@@ -72,7 +72,7 @@ namespace MyGameNamespace
             Debug.Log($"chay toi noi");
         }
 
-        public void TakeOffCarryable()
+        public void TakeOffCarryableByAnother(ICarrier carrier)
         {
             Debug.Log($"TakeOffCarryable", this);
             Carryable = null;

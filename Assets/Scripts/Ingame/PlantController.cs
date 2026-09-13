@@ -53,6 +53,7 @@ namespace MyGameNamespace
         }
 
 
+
         void Update()
         {
             //handle spawn carryable
@@ -62,7 +63,7 @@ namespace MyGameNamespace
                 var newCarryObject = Instantiate(carryablePrefabs, transform);
                 Carryable = newCarryObject.GetComponent<ICarryable>();
                 Carryable.Setup(this, carryPositionList);
-                EventDispatcher.OnCarryableSpawneed?.Invoke(new(Carryable, positionTakeCarryable));
+                EventDispatcher.OnCarryableSpawneed?.Invoke(new(this, Carryable, positionTakeCarryable));
             }
         }
         [Button]
@@ -92,7 +93,7 @@ namespace MyGameNamespace
             constructionUpgradwView.gameObject.SetActive(true);
             constructionUpgradwView.UpdateView(this);
         }
-        public void TakeOffCarryable()
+        public void TakeOffCarryableByAnother(ICarrier whoTake)
         {
             Debug.Log($"TakeOffCarryable", this);
             prevSpawnCarry = Time.time;

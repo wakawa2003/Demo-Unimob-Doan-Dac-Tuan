@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Sirenix.OdinInspector;
-using UnityEditor.PackageManager;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -24,6 +24,7 @@ namespace MyGameNamespace
 
         List<IDeliver> DeliverWaitingList = new List<IDeliver>();
         List<ICustomer> CustomerWaitingList = new List<ICustomer>();
+        List<CarryableWaitToDeliverData> CaryableWaitToDeliverDatasList = new();
 
         void OnDestroy()
         {
@@ -100,27 +101,49 @@ namespace MyGameNamespace
                     return false;
                 });
 
-
                 s.Deliver = deliver;
+
+                //xoá carryable da co nguoi deliver đi
+                var find = CaryableWaitToDeliverDatasList.Find(_ => _.Deliver == deliver);
+                CaryableWaitToDeliverDatasList.Remove(find);
+
                 if (s == null)
                     Debug.LogError($"Loi khong tim thay slot");
                 await deliver.RunToPosition(s.PositonDeliver.position, s.PositonDeliver.eulerAngles, destroyCancellationToken);
                 await customer.TakeCarryable(deliver, deliver.Carryable, destroyCancellationToken);
                 s.Customer = null;
                 s.Deliver = null;
+                await CheckSpawnNewDeliver();
             }
         }
 
-        private async void OnCarryableSpawneed((ICarryable carryable, Transform transformTake) data)
+        private async void OnCarryableSpawneed((ICarrier carrier, ICarryable carryable, Transform transformTake) data)
         {
-            var newDeliver = Instantiate(deliverPrefabs, initPosSpawnDeliver.position, Quaternion.identity);
+            var find = CaryableWaitToDeliverDatasList.Find(_ => _.carrier == data.carrier && _.carryable == data.carryable);
+            if (find == null)
+                CaryableWaitToDeliverDatasList.Add(new CarryableWaitToDeliverData { carrier = data.carrier, carryable = data.carryable, transformTake = data.transformTake });
+            await CheckSpawnNewDeliver();
+        }
 
-            newDeliver.GetComponent<IDeliver>().Setup(endPosRunDeliver.position);
-            //chay den cho noi can lay
-            await newDeliver.GetComponent<IDeliver>().RunToPosition(data.transformTake.position, data.transformTake.eulerAngles, destroyCancellationToken);
+        private async UniTask CheckSpawnNewDeliver()
+        {
+            //chi spawn deliver cho caryable chua co deliver thoi
 
-            //lay carryable va chay anim
-            await newDeliver.GetComponent<ICarrier>().TakeCarryable(data.carryable.Owner, data.carryable, destroyCancellationToken);
+            foreach (var data in CaryableWaitToDeliverDatasList.ToList())
+            {
+                if (data.Deliver == null)
+                    if (CaryableWaitToDeliverDatasList.Find(_ => _.carrier == data.carrier && _.Deliver != null) == null)//kiem tra khong trung lap nhung carrier da co deliver roi.
+                    {
+                        var newDeliver = Instantiate(deliverPrefabs, initPosSpawnDeliver.position, Quaternion.identity).GetComponent<IDeliver>();
+                        newDeliver.Setup(endPosRunDeliver.position);
+                        data.Deliver = newDeliver;
+                        //chay den cho noi can lay
+                        await newDeliver.RunToPosition(data.transformTake.position, data.transformTake.eulerAngles, destroyCancellationToken);
+
+                        //lay carryable va chay anim
+                        await newDeliver.TakeCarryable(data.carryable.Owner, data.carryable, destroyCancellationToken);
+                    }
+            }
         }
 
         public async UniTask<SlotServeData> SpawnNewCustomer(Vector3 startPos, Quaternion rotation, bool isInstant)
@@ -140,13 +163,24 @@ namespace MyGameNamespace
         }
 
 
+
+        [System.Serializable]
+        public class CarryableWaitToDeliverData
+        {
+            public ICarrier carrier;
+            public ICarryable carryable;
+            public Transform transformTake;
+
+            public ICarrier Deliver;
+        }
+
         [System.Serializable]
         public class SlotServeData
         {
-            [ReadOnly] public GameObject Customer;
+            [Sirenix.OdinInspector.ReadOnly] public GameObject Customer;
             [FormerlySerializedAs("Position")]
             public Transform PositionCustomer;
-            [ReadOnly] public ICarrier Deliver;
+            [Sirenix.OdinInspector.ReadOnly] public ICarrier Deliver;
             public Transform PositonDeliver;
         }
     }
