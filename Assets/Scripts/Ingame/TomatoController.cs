@@ -17,7 +17,7 @@ namespace MyGameNamespace
         CarryingState carryingState;
         public ICarrier Owner { get; set; }
         public int Cost { get; set; }
-
+        Sequence animMove;
         void Awake()
         {
 
@@ -28,6 +28,17 @@ namespace MyGameNamespace
         public void Setup(int cost)
         {
             Cost = cost;
+            animMove = DOTween.Sequence();
+            for (int i = 0; i < bodyObjectList.Count(); i++)
+            {
+                var initScale = bodyObjectList[i].transform.localScale;
+                var initLocalPos = bodyObjectList[i].transform.localPosition;
+
+                bodyObjectList[i].transform.localPosition += Vector3.up * 0.7f;
+                bodyObjectList[i].transform.localScale = Vector3.zero;
+                animMove.Join(bodyObjectList[i].transform.DOLocalMove(initLocalPos, 0.3f));
+                animMove.Join(bodyObjectList[i].transform.DOScale(initScale, 0.7f).SetDelay((i) * 0.1f).SetEase(Ease.OutBack));
+            }
         }
         public void Setup(ICarrier owner, Transform[] posList) => idleState.Setup(owner, posList);
         public async UniTask SetOwner(Transform[] posList, ICarrier owner, CancellationToken cancellationToken) => await (idleState == null ? UniTask.CompletedTask : idleState.SetOwner(posList, owner, cancellationToken));
@@ -39,6 +50,7 @@ namespace MyGameNamespace
             Sequence animMove;
             public override UniTask Initialize(CancellationToken token)
             {
+
                 Debug.Log($"Initialize IdleState");
                 Payload.idleState = this;
                 return base.Initialize(token);
@@ -53,6 +65,7 @@ namespace MyGameNamespace
 
             public override async UniTask<StateTransitionInfo> Execute(CancellationToken token)
             {
+
                 while (true)
                 {
                     await UniTask.NextFrame();
@@ -82,10 +95,15 @@ namespace MyGameNamespace
                 if (Payload.Owner != null)
                     Payload.Owner.TakeOffCarryableByAnother(newOwner);
                 Payload.Owner = newOwner;
+                Payload.animMove?.Kill(true);
                 animMove = DOTween.Sequence();
                 for (int i = 0; i < listPos.Length; i++)
                 {
-                    animMove.Join(Payload.bodyObjectList[i].transform.DOMove(listPos[i].transform.position, 0.3f));
+                    animMove.Join(Payload.bodyObjectList[i].transform.DOShakeScale(0.2f, new Vector3(0.2f, 0.4f, 0.2f), 1).SetDelay(i * 0.1f));
+                    animMove.Join(Payload.bodyObjectList[i].transform.DOJump(listPos[i].transform.position, 0.6f, 1, 0.5f).SetDelay((i + 1) * 0.1f));
+
+                    // animMove.Join(Payload.bodyObjectList[i].transform.DOMove(listPos[i].transform.position, 0.3f));
+                    // animMove.Join(Payload.bodyObjectList[i].transform.DOMove(listPos[i].transform.position + Vector3.up * 5, 0.15f).SetLoops(1, LoopType.Yoyo)); 
                     Payload.bodyObjectList[i].transform.SetParent(listPos[i]);
                 }
                 Payload.transform.SetParent(listPos.First());
