@@ -25,7 +25,6 @@ namespace MyGameNamespace
 
         [Header("STATS")]
         [SerializeField] private TMP_Text txtCoinEarn;
-        [SerializeField] private TMP_Text txtDuration;
         [SerializeField] private TMP_Text txtSpeedPerMinute;
         [SerializeField] private Image imgIcon;
         [SerializeField] private GameObject viewStats;
@@ -96,7 +95,6 @@ namespace MyGameNamespace
         private void UpdateStats()
         {
             txtCoinEarn.text = GameUtils.FormatNumber(CoinEarn);
-            txtDuration.text = Duration.ToString() + "s";
             txtSpeedPerMinute.text = GameUtils.FormatNumber((int)(CoinEarn * 60 / Duration)) + "/min";
             var c = GameConfig.Ins.GetResourceConfig(ResourcesID);
             imgIcon.sprite = c.Avatar;

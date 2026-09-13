@@ -655,12 +655,12 @@ MonoBehaviour:
   - {fileID: 2222531108903843186}
   positionTakeCarryable: {fileID: 5673568796451809464}
   txtCoinEarn: {fileID: 834728026229429527}
-  txtDuration: {fileID: 1901735573924279349}
   txtSpeedPerMinute: {fileID: 1901735573924279349}
   imgIcon: {fileID: 3717078733580814030}
   viewStats: {fileID: 1217332556641492812}
   constructionUpgradwView: {fileID: 4879722078760092645}
   <Level>k__BackingField: 0
+  <PlantID>k__BackingField: 
   <ResourcesID>k__BackingField: resource_1
   <_CoinEarn>k__BackingField: 0
   <_Duration>k__BackingField: 0
@@ -997,7 +997,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6620486936571906819, guid: 7dc6442f4f2b74ee58012c89cba62b9d, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 73.68
+      value: 79.84
       objectReference: {fileID: 0}
     - target: {fileID: 8208875674965538370, guid: 7dc6442f4f2b74ee58012c89cba62b9d, type: 3}
       propertyPath: m_ActiveFontFeatures.Array.size

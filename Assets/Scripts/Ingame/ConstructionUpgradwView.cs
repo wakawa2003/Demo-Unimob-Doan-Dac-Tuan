@@ -63,7 +63,7 @@ namespace MyGameNamespace
             }
 
             var a = GameConfig.Ins.GetResourceConfig(plant.ResourcesID);
-            txtProductName.text = a.Name;
+            txtProductName.text = plant.PlantID;
             txtReward.text = GameUtils.FormatNumber(plant.CoinEarn);
             txtDuration.text = plant.Duration.ToString() + "s";
             btnUpgrade.gameObject.SetActive(plant.Level < l.Count);
