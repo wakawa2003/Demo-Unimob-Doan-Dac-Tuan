@@ -2,8 +2,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
+using EasyDI;
 using Sirenix.OdinInspector;
+using TuanTool;
 using Unity.Collections;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -21,6 +24,9 @@ namespace MyGameNamespace
         [SerializeField] private GameObject deliverPrefabs;
         [SerializeField] private Transform initPosSpawnDeliver;
         [SerializeField] private Transform endPosRunDeliver;
+
+        [Inject] IUserData userData;
+        [Inject] IPoolMannager poolMannager;
 
         List<IDeliver> DeliverWaitingList = new List<IDeliver>();
         List<ICustomer> CustomerWaitingList = new List<ICustomer>();
@@ -53,7 +59,14 @@ namespace MyGameNamespace
 
         private void onCustomerTakeCarryable((ICustomer customer, ICarrier carrier, ICarryable carryable) data)
         {
+            var cost = data.carryable.GetComponent<ICostable>();
+            userData.AddCoin(cost.Cost);
+            var slot = slotServerData.First(_ => _.Customer?.transform == data.customer.transform);
+            if (poolMannager == null)
+                Debug.LogError($"nulll");
+            poolMannager.Instantiate("coinRewardFX", slot.PositionRewardCoin.position, slot.PositionRewardCoin.rotation).GetComponentInChildren<ParticleSystem>().Play(true);
             SpawnNewCustomer(initPosSpawnCustomer.position, initPosSpawnCustomer.rotation, false).Forget();
+
         }
 
         private void onDeliverInit(IDeliver arg0)
@@ -182,6 +195,8 @@ namespace MyGameNamespace
             public Transform PositionCustomer;
             [Sirenix.OdinInspector.ReadOnly] public ICarrier Deliver;
             public Transform PositonDeliver;
+
+            public Transform PositionRewardCoin;
         }
     }
 }

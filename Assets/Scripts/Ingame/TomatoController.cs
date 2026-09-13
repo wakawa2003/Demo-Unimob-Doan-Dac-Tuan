@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace MyGameNamespace
 {
-    public class TomatoController : MonoBehaviour, ICarryable
+    public class TomatoController : MonoBehaviour, ICarryable, ICostable
     {
 
         [SerializeField] private GameObject[] bodyObjectList;
@@ -16,6 +16,7 @@ namespace MyGameNamespace
         IdleState idleState;
         CarryingState carryingState;
         public ICarrier Owner { get; set; }
+        public int Cost { get; set; }
 
         void Awake()
         {
@@ -24,8 +25,13 @@ namespace MyGameNamespace
             stateMachine.Execute<IdleState, TomatoController>(this, destroyCancellationToken);
         }
 
+        public void Setup(int cost)
+        {
+            Cost = cost;
+        }
         public void Setup(ICarrier owner, Transform[] posList) => idleState.Setup(owner, posList);
         public async UniTask SetOwner(Transform[] posList, ICarrier owner, CancellationToken cancellationToken) => await (idleState == null ? UniTask.CompletedTask : idleState.SetOwner(posList, owner, cancellationToken));
+
 
         public class IdleState : StateBase<TomatoController>
         {

@@ -63,6 +63,7 @@ namespace MyGameNamespace
                 var newCarryObject = Instantiate(carryablePrefabs, transform);
                 Carryable = newCarryObject.GetComponent<ICarryable>();
                 Carryable.Setup(this, carryPositionList);
+                newCarryObject.GetComponent<ICostable>().Setup(CoinEarn);
                 EventDispatcher.OnCarryableSpawneed?.Invoke(new(this, Carryable, positionTakeCarryable));
             }
         }

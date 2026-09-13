@@ -278,6 +278,64 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 5626556437748558997, guid: 22980ed0041e54468a524bb3e53c1f42, type: 3}
   m_PrefabInstance: {fileID: 2662749234739970386}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &69859207
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 69859208}
+  - component: {fileID: 69859209}
+  m_Layer: 0
+  m_Name: Pool manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &69859208
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 69859207}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.91172, y: -1.2549, z: -0.96774}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &69859209
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 69859207}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e28810a61b060c4593f1b9b21c08802, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TuanTool.Pool
+  containerGlobal: {fileID: 69859208}
+  _poolSlots:
+  - AutoInit: 1
+    Name: coinRewardFX
+    Object: {fileID: 4690974855142316733, guid: 72af2805ca5894e36b7b259694c36e89, type: 3}
+    Amount: 10
+    hintIndex: 0
+    _poolQueue: []
+    Container: {fileID: 0}
+--- !u!4 &98973977 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8936869000836862065, guid: 22a853b12f2114bc39874a3da3615686, type: 3}
+  m_PrefabInstance: {fileID: 160026005}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &112386299
 GameObject:
   m_ObjectHideFlags: 0
@@ -338,6 +396,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MyGameNamespace.SceneGameInstaller
   UserData: {fileID: 1654089893}
+  PoolManager: {fileID: 69859207}
 --- !u!4 &124400146 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 938877188152627784, guid: 22a853b12f2114bc39874a3da3615686, type: 3}
@@ -428,6 +487,11 @@ Transform:
 --- !u!4 &230374998 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5065334029037040834, guid: 22a853b12f2114bc39874a3da3615686, type: 3}
+  m_PrefabInstance: {fileID: 160026005}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &424995536 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2033696025865994705, guid: 22a853b12f2114bc39874a3da3615686, type: 3}
   m_PrefabInstance: {fileID: 160026005}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &479951267 stripped
@@ -605,6 +669,7 @@ GameObject:
   m_Component:
   - component: {fileID: 712959060}
   - component: {fileID: 712959061}
+  - component: {fileID: 712959062}
   m_Layer: 0
   m_Name: Game Controller
   m_TagString: Untagged
@@ -642,26 +707,40 @@ MonoBehaviour:
   slotServerData:
   - Customer: {fileID: 0}
     PositionCustomer: {fileID: 124400146}
-    Deliver: {fileID: 0}
     PositonDeliver: {fileID: 230374998}
+    PositionRewardCoin: {fileID: 98973977}
   - Customer: {fileID: 0}
     PositionCustomer: {fileID: 1015882413}
-    Deliver: {fileID: 0}
     PositonDeliver: {fileID: 1078260509}
+    PositionRewardCoin: {fileID: 2130828588}
   - Customer: {fileID: 0}
     PositionCustomer: {fileID: 1443248590}
-    Deliver: {fileID: 0}
     PositonDeliver: {fileID: 2109728561}
+    PositionRewardCoin: {fileID: 1375737961}
   - Customer: {fileID: 0}
     PositionCustomer: {fileID: 1609443147}
-    Deliver: {fileID: 0}
     PositonDeliver: {fileID: 479951267}
+    PositionRewardCoin: {fileID: 424995536}
   initPosSpawnCustomer: {fileID: 599532389}
   customerPrefabs: {fileID: 5081378640111839596, guid: 9e73c309783284fd2bb50baca4fe3da9, type: 3}
   endPosCustomer: {fileID: 1983070562}
   deliverPrefabs: {fileID: 8253331296402320925, guid: c3ae31d2ab6154bfdb8311b63e4f9355, type: 3}
   initPosSpawnDeliver: {fileID: 749685940}
   endPosRunDeliver: {fileID: 1673775536}
+--- !u!114 &712959062
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 712959059}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09e869dbc9250ad409062faa29c38a9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EasyDI::EasyDI.GameObjectContext
+  IsAutoSearchInstallerInThisGameObject: 1
+  MonoInstaller: []
 --- !u!1 &749685939
 GameObject:
   m_ObjectHideFlags: 0
@@ -1238,6 +1317,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 711fa6617e9fb4dd18ca934d637ed349, type: 2}
   - {fileID: 11400000, guid: e3e3df17495ff4df496cd08926ab9ed0, type: 2}
   - {fileID: 11400000, guid: 4da4d705c2428424f82a7045982a2c32, type: 2}
+--- !u!4 &1375737961 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5611049960874620050, guid: 22a853b12f2114bc39874a3da3615686, type: 3}
+  m_PrefabInstance: {fileID: 160026005}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1440335176
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2158,6 +2242,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8616504574162833441, guid: 22a853b12f2114bc39874a3da3615686, type: 3}
   m_PrefabInstance: {fileID: 160026005}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &2130828588 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1099507573327571366, guid: 22a853b12f2114bc39874a3da3615686, type: 3}
+  m_PrefabInstance: {fileID: 160026005}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2662749234739970386
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2244,3 +2333,4 @@ SceneRoots:
   - {fileID: 2025541787}
   - {fileID: 2090171455}
   - {fileID: 1341457070}
+  - {fileID: 69859208}
