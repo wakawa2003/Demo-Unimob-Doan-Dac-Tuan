@@ -1318,6 +1318,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MyGameNamespace.GameConfig
   upgradeList:
   - _underlyingValue: {fileID: 11400000, guid: 13316800e47914c59a48e3901403b53a, type: 2}
+  - _underlyingValue: {fileID: 11400000, guid: c79255da353ac47198cfd6cb31442647, type: 2}
   ResourceConfigs:
   - {fileID: 11400000, guid: 977e58c7e01374bf8a437b161c2a9b2f, type: 2}
   - {fileID: 11400000, guid: 711fa6617e9fb4dd18ca934d637ed349, type: 2}

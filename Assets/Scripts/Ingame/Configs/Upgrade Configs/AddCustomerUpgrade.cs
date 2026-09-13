@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using EasyDI;
@@ -15,25 +16,40 @@ namespace MyGameNamespace
         [field: SerializeField] public string Description { get; set; }
         [field: SerializeField] public long Cost { get; set; }
 
+        private bool IsUpgraded
+        {
+            get => PlayerPrefs.GetInt("buff_" + Name) == 1;
+            set
+            {
+                PlayerPrefs.SetInt("buff_" + Name, value ? 1 : 0);
+                PlayerPrefs.Save();
+            }
+        }
+
+
+        [SerializeField] private int AmountCustomer;
         [Inject] IUserData userData;
 
         public bool IsCanBuy()
         {
             var gameControlelr = GameObject.FindAnyObjectByType<GameController>();
-            return gameControlelr.IsCanUnlockCustomer();
+            return !IsUpgraded && gameControlelr.GetNumberUnlockCustomer() >= AmountCustomer;
         }
 
         [Button]
         public async UniTask Upgrade(CancellationToken cancellationToken)
         {
-            var gameControlelr = GameObject.FindAnyObjectByType<GameController>();
-            gameControlelr.UnlockMoreCustomer();
+            for (int i = 0; i < AmountCustomer; i++)
+            {
+                var gameControlelr = GameObject.FindAnyObjectByType<GameController>();
+                gameControlelr.UnlockMoreCustomer();
+
+            }
+            IsUpgraded = true;
             userData.AddCoin(-Cost);
             await UniTask.CompletedTask;
         }
 
-        public void Setup(ContextBase injector)
-        {
-        }
+
     }
 }

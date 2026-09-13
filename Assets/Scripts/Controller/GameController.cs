@@ -42,7 +42,10 @@ namespace MyGameNamespace
 
         void Start()
         {
+            QualitySettings.vSyncCount = 0;
+            Application.targetFrameRate = 60;
             Input.simulateMouseWithTouches = true;
+            PlayerPrefs.DeleteAll();
             EventDispatcher.OnCarryableSpawneed.AddListener(OnCarryableSpawneed);
             EventDispatcher.OnDeliverHasCarryable.AddListener(OnDeliverHasCarryable);
             EventDispatcher.OnCustomerReadyToTake.AddListener(OnCustomerReadyToTake);
@@ -192,13 +195,18 @@ namespace MyGameNamespace
             return slotServerData.Any(_ => _.IsUnlock == false);
         }
 
+        public int GetNumberUnlockCustomer()
+        {
+            return slotServerData.Select(_ => _.IsUnlock == false).Count();
+        }
+
         public void UnlockMoreCustomer()
         {
             if (IsCanUnlockCustomer())
             {
                 var find = slotServerData.First(_ => _.IsUnlock == false);
                 find.IsUnlock = true;
-                CheckSpawnCustomer(true).Forget();
+                CheckSpawnCustomer(false).Forget();
             }
         }
 

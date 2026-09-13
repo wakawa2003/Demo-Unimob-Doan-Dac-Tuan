@@ -13,6 +13,5 @@ namespace MyGameNamespace
         public long Cost { get; set; }
         public UniTask Upgrade(CancellationToken cancellationToken);
         public bool IsCanBuy();
-        public void Setup(ContextBase injector);
     }
 }
