@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Add 2 CustomerUpgrade 1
   m_EditorClassIdentifier: Assembly-CSharp::MyGameNamespace.AddCustomerUpgrade
   <Avatar>k__BackingField: {fileID: 21300000, guid: 4544ffb4d02b34231a4f6e675469a7b7, type: 3}
-  <Name>k__BackingField: Add Customer
+  <Name>k__BackingField: Add 2 Customer
   <Description>k__BackingField: +2 Customer
   <Cost>k__BackingField: 10000
   AmountCustomer: 2

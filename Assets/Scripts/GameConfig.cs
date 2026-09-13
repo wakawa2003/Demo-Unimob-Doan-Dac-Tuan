@@ -54,6 +54,56 @@ namespace MyGameNamespace
                 return;
             }
             #endregion
+
+            CheckUniqueUpgradeList();
+        }
+
+        public void CheckUniqueUpgradeList()
+        {
+            var upgradesByName = new Dictionary<string, List<IUpgradeStrategy>>();
+
+            foreach (var item in UpgradeList)
+            {
+                var upgrade = item.Value;
+                if (upgrade == null)
+                {
+                    Debug.LogError("UpgradeList contains a null IUpgradeStrategy.", this);
+                    continue;
+                }
+
+                if (!upgradesByName.TryGetValue(upgrade.Name, out var upgrades))
+                {
+                    upgrades = new List<IUpgradeStrategy>();
+                    upgradesByName.Add(upgrade.Name, upgrades);
+                }
+
+                upgrades.Add(upgrade);
+            }
+
+            foreach (var item in upgradesByName)
+            {
+                if (item.Value.Count < 2)
+                    continue;
+
+                var duplicateFiles = string.Join(", ", item.Value.Select(GetUpgradeSource));
+                Debug.LogError($"Duplicate IUpgradeStrategy Name '{item.Key}' found in: {duplicateFiles}", this);
+            }
+
+            string GetUpgradeSource(IUpgradeStrategy upgrade)
+            {
+#if UNITY_EDITOR
+                if (upgrade is UnityEngine.Object unityObject)
+                {
+                    var assetPath = UnityEditor.AssetDatabase.GetAssetPath(unityObject);
+                    if (!string.IsNullOrEmpty(assetPath))
+                        return assetPath;
+                }
+#endif
+                return upgrade is UnityEngine.Object obj
+                    ? obj.name
+                    : upgrade.GetType().FullName;
+            }
+
         }
 
         public ResourceConfig GetResourceConfig(string id)
