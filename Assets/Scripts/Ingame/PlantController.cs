@@ -98,7 +98,7 @@ namespace MyGameNamespace
             prevSpawnCarry = Time.time;
             Carryable = null;
         }
-        public UniTask TakeCarryable(ICarryable carryable, CancellationToken cancellationToken)
+        public UniTask TakeCarryable(ICarrier fromCarrier, ICarryable carryable, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

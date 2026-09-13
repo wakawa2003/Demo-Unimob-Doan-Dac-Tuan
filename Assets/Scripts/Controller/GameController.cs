@@ -89,7 +89,7 @@ namespace MyGameNamespace
                 //tim ra slot chua customer
                 var slotServerData = this.slotServerData.ToList().Find(_ => _.Customer.transform == customer.transform);
                 await deliver.RunToPosition(slotServerData.PositonDeliver.position, slotServerData.PositonDeliver.eulerAngles, destroyCancellationToken);
-                await customer.TakeCarryable(deliver.Carryable, destroyCancellationToken);
+                await customer.TakeCarryable(deliver, deliver.Carryable, destroyCancellationToken);
             }
         }
 
@@ -102,7 +102,7 @@ namespace MyGameNamespace
             await newDeliver.GetComponent<IDeliver>().RunToPosition(data.transformTake.position, data.transformTake.eulerAngles, destroyCancellationToken);
 
             //lay carryable va chay anim
-            await newDeliver.GetComponent<ICarrier>().TakeCarryable(data.carryable, destroyCancellationToken);
+            await newDeliver.GetComponent<ICarrier>().TakeCarryable(data.carryable.Owner, data.carryable, destroyCancellationToken);
         }
 
         public async UniTask<SlotServeData> SpawnNewCustomer(Vector3 startPos, Quaternion rotation, float duration)

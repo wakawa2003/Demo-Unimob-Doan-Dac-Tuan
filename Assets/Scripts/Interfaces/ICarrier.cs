@@ -10,7 +10,7 @@ namespace MyGameNamespace
     {
 
         public void TakeOffCarryable();
-        public UniTask TakeCarryable(ICarryable carryable, CancellationToken cancellationToken);
+        public UniTask TakeCarryable(ICarrier fromCarrier, ICarryable carryable, CancellationToken cancellationToken);
         public ICarryable Carryable { get; set; }
     }
 }

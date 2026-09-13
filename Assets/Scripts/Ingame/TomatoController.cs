@@ -15,7 +15,7 @@ namespace MyGameNamespace
         IStateMachine stateMachine = new StateMachine();
         IdleState idleState;
         CarryingState carryingState;
-        ICarrier owner;
+        public ICarrier Owner { get; set; }
 
         void Awake()
         {
@@ -58,7 +58,7 @@ namespace MyGameNamespace
             public void Setup(ICarrier owner, Transform[] posList)
             {
                 Debug.Log($"SetSpawn");
-                Payload.owner = owner;
+                Payload.Owner = owner;
                 for (int i = 0; i < posList.Length; i++)
                 {
                     var item = posList[i];
@@ -73,9 +73,9 @@ namespace MyGameNamespace
             {
 
                 Debug.Log($"OnSetOwner");
-                if (Payload.owner != null)
-                    Payload.owner.TakeOffCarryable();
-                Payload.owner = newOwner;
+                if (Payload.Owner != null)
+                    Payload.Owner.TakeOffCarryable();
+                Payload.Owner = newOwner;
                 animMove = DOTween.Sequence();
                 for (int i = 0; i < listPos.Length; i++)
                 {

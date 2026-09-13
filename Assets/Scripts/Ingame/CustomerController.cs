@@ -67,9 +67,9 @@ namespace MyGameNamespace
             throw new NotImplementedException();
         }
 
-        public UniTask TakeCarryable(ICarryable carryable, CancellationToken cancellationToken)
+        public UniTask TakeCarryable(ICarrier fromCarrier, ICarryable carryable, CancellationToken cancellationToken)
         {
-            return waitingState == null ? UniTask.CompletedTask : waitingState.TakeCarryable(carryable, cancellationToken);
+            return waitingState == null ? UniTask.CompletedTask : waitingState.TakeCarryable(fromCarrier, carryable, cancellationToken);
         }
 
         public void Setup(Vector3 endPos)
@@ -131,13 +131,13 @@ namespace MyGameNamespace
                 return Transition.GoTo<EndState, CustomerController>(Payload);
             }
 
-            public async UniTask TakeCarryable(ICarryable carryable, CancellationToken cancellationToken)
+            public async UniTask TakeCarryable(ICarrier fromCarrier, ICarryable carryable, CancellationToken cancellationToken)
             {
                 if (Payload.Carryable == null)
                 {
                     await carryable.SetOwner(Payload.listCarryablePosition, Payload, cancellationToken);
                     Payload.Carryable = carryable;
-
+                    EventDispatcher.onCustomerTakeCarryable?.Invoke(new(Payload, fromCarrier, carryable));
                 }
             }
         }

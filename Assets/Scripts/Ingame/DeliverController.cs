@@ -50,7 +50,7 @@ namespace MyGameNamespace
         /// <param name="carryable"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async UniTask TakeCarryable(ICarryable carryable, CancellationToken cancellationToken) => initState?.TakeCarryable(carryable, cancellationToken);
+        public async UniTask TakeCarryable(ICarrier fromCarrier, ICarryable carryable, CancellationToken cancellationToken) => initState?.TakeCarryable(fromCarrier, carryable, cancellationToken);
 
         public async UniTask RunToPosition(Vector3 target, Vector3 rotationAtEnd, CancellationToken cancellationToken)
         {
@@ -111,7 +111,7 @@ namespace MyGameNamespace
                 return await UniTask.FromResult(Transition.GoTo<DeliveringState, DeliverController>(Payload));
             }
 
-            public async UniTask TakeCarryable(ICarryable carryable, CancellationToken cancellationToken)
+            public async UniTask TakeCarryable(ICarrier fromCarrier, ICarryable carryable, CancellationToken cancellationToken)
             {
                 if (Payload.Carryable == null)
                 {
@@ -150,10 +150,7 @@ namespace MyGameNamespace
             {
 
                 //cho den khi giao dc hang
-                while (Payload.Carryable != null)
-                {
-                    await UniTask.NextFrame();
-                }
+                await EventDispatcher.onCustomerTakeCarryable.AsObservable().FirstAsync(_ => _.carrier == Payload as ICarrier, token);
                 return Transition.GoTo<EndState, DeliverController>(Payload);
             }
         }
