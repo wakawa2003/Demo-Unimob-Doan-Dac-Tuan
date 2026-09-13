@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
@@ -23,9 +24,10 @@ namespace MyGameNamespace
 
         Vector3 endPos;
 
+
         void Awake()
         {
-            stateMachine.SetResolver(new GameUtils.DefaultResolver());
+            stateMachine.SetResolver(new Resolver());
             stateMachine.Execute<InitState, DeliverController>(this, destroyCancellationToken);
         }
 
@@ -176,6 +178,26 @@ namespace MyGameNamespace
                 await Payload.RunToPosition(Payload.endPos, Vector3.forward, token);
                 Destroy(Payload.gameObject);
                 return Transition.GoToExit();
+            }
+        }
+        public class Resolver : ITypeResolver
+        {
+            public object Resolve(Type type)
+            {
+                if (type == typeof(DeliverController.InitState))
+                {
+                    return new DeliverController.InitState();
+                }
+                if (type == typeof(DeliverController.DeliveringState))
+                {
+                    return new DeliverController.DeliveringState();
+                }
+                if (type == typeof(DeliverController.EndState))
+                {
+                    return new DeliverController.EndState();
+                }
+
+                throw new InvalidOperationException($"Không có resolver cho type: {type.FullName}");
             }
         }
     }

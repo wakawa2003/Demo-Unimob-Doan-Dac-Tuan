@@ -1532,8 +1532,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c3a6bbf3d8994ad89a4ce1f7ab8e009, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MyGameNamespace.UserDataController
-  <Coin>k__BackingField: 50000
-  <Diamond>k__BackingField: 50000
+  <Coin>k__BackingField: 500000
+  <Diamond>k__BackingField: 500000
   <OnCoinChange>k__BackingField:
     m_PersistentCalls:
       m_Calls: []
@@ -2081,7 +2081,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3683412057422147241, guid: 73b8246896ace4b568d8d18c8ea1e2e5, type: 3}
       propertyPath: m_Alpha
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3709546621828095614, guid: 73b8246896ace4b568d8d18c8ea1e2e5, type: 3}
       propertyPath: m_SizeDelta.y
@@ -2091,8 +2091,8 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4762403192492900999, guid: 73b8246896ace4b568d8d18c8ea1e2e5, type: 3}
-      propertyPath: m_BlockingObjects
+    - target: {fileID: 3779993460156198879, guid: 73b8246896ace4b568d8d18c8ea1e2e5, type: 3}
+      propertyPath: m_AnchoredPosition.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4762403192492900999, guid: 73b8246896ace4b568d8d18c8ea1e2e5, type: 3}
@@ -2230,6 +2230,10 @@ PrefabInstance:
     - target: {fileID: 5689445426432129232, guid: 73b8246896ace4b568d8d18c8ea1e2e5, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5753699702474249243, guid: 73b8246896ace4b568d8d18c8ea1e2e5, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 5753902223368655172, guid: 73b8246896ace4b568d8d18c8ea1e2e5, type: 3}
       propertyPath: m_SizeDelta.x

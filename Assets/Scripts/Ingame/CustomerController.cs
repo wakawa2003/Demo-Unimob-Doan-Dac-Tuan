@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
@@ -31,7 +32,7 @@ namespace MyGameNamespace
         void Awake()
         {
             stateMachine = new StateMachine();
-            stateMachine.SetResolver(new GameUtils.DefaultResolver());
+            stateMachine.SetResolver(new Resolver());
             stateMachine.Execute<IdleState, CustomerController>(this, destroyCancellationToken);
         }
 
@@ -159,5 +160,25 @@ namespace MyGameNamespace
 
             }
         }
+
+        public class Resolver : ITypeResolver
+        {
+            private readonly Dictionary<Type, Func<object>> _map = new()
+        {
+            { typeof(CustomerController.IdleState), () => new CustomerController.IdleState() },
+            { typeof(CustomerController.WaitingState), () => new CustomerController.WaitingState() },
+            { typeof(CustomerController.EndState), () => new CustomerController.EndState() }
+        };
+
+            public object Resolve(Type type)
+            {
+                if (_map.TryGetValue(type, out var factory))
+                {
+                    return factory();
+                }
+                throw new InvalidOperationException($"Không có resolver cho type: {type.FullName}");
+            }
+        }
+
     }
 }

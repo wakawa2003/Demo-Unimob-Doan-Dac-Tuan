@@ -1,9 +1,4 @@
-﻿#if UNITY_EDITOR || UNITY_STANDALONE
-// Unity's Text component doesn't render <b> tag correctly on mobile devices
-#define USE_BOLD_COMMAND_SIGNATURES
-#endif
-
-using UnityEngine;
+﻿using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,7 +6,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Text;
 using Object = UnityEngine.Object;
-#if UNITY_EDITOR && UNITY_2021_1_OR_NEWER
+#if UNITY_EDITOR
 using SystemInfo = UnityEngine.Device.SystemInfo; // To support Device Simulator on Unity 2021.1+
 #endif
 
@@ -88,12 +83,10 @@ namespace IngameDebugConsole
 			{ typeof( RectOffset ), ParseRectOffset },
 			{ typeof( Bounds ), ParseBounds },
 			{ typeof( GameObject ), ParseGameObject },
-#if UNITY_2017_2_OR_NEWER
 			{ typeof( Vector2Int ), ParseVector2Int },
 			{ typeof( Vector3Int ), ParseVector3Int },
 			{ typeof( RectInt ), ParseRectInt },
 			{ typeof( BoundsInt ), ParseBoundsInt },
-#endif
 		};
 
 		// All the readable names of accepted types
@@ -124,8 +117,12 @@ namespace IngameDebugConsole
 		// CompareInfo used for case-insensitive command name comparison
 		internal static readonly CompareInfo caseInsensitiveComparer = new CultureInfo( "en-US" ).CompareInfo;
 
-		static DebugLogConsole()
+		[RuntimeInitializeOnLoadMethod( RuntimeInitializeLoadType.SubsystemRegistration )] // Configurable Enter Play Mode: https://docs.unity3d.com/Manual/DomainReloading.html
+		private static void ResetStatics()
 		{
+			methods.Clear();
+			OnCommandExecuted = null;
+
 #if !IDG_DISABLE_HELP_COMMAND
 			AddCommand( "help", "Prints all commands", LogAllCommands );
 			AddCommand<string>( "help", "Prints all matching commands", LogAllCommandsWithName );
@@ -161,53 +158,55 @@ namespace IngameDebugConsole
 			};
 #endif
 
-#if UNITY_EDITOR || !NETFX_CORE
-			foreach( Assembly assembly in AppDomain.CurrentDomain.GetAssemblies() )
-#else
-			foreach( Assembly assembly in new Assembly[] { typeof( DebugLogConsole ).Assembly } ) // On UWP, at least search this plugin's Assembly for console methods
-#endif
-			{
-#if( NET_4_6 || NET_STANDARD_2_0 ) && ( UNITY_EDITOR || !NETFX_CORE )
-				if( assembly.IsDynamic )
-					continue;
+            foreach (Assembly assembly in GetAllAssemblies() ?? new Assembly[] { typeof(DebugLogConsole).Assembly }) // On UWP, at least search this plugin's Assembly for console methods
+            {
+#if (NET_4_6 || NET_STANDARD_2_0) && (UNITY_EDITOR || !NETFX_CORE)
+                if (assembly.IsDynamic)
+                    continue;
 #endif
 
 
 #if UNITY_EDITOR || !NETFX_CORE
-				string assemblyName = assembly.GetName().Name;
-				bool ignoreAssembly = false;
-				for( int i = 0; i < ignoredAssemblies.Length; i++ )
-				{
-					if( caseInsensitiveComparer.IsPrefix( assemblyName, ignoredAssemblies[i], CompareOptions.IgnoreCase ) )
-					{
-						ignoreAssembly = true;
-						break;
-					}
-				}
+                string assemblyName = assembly.GetName().Name;
+                bool ignoreAssembly = false;
+                for (int i = 0; i < ignoredAssemblies.Length; i++)
+                {
+                    if (caseInsensitiveComparer.IsPrefix(assemblyName, ignoredAssemblies[i], CompareOptions.IgnoreCase))
+                    {
+                        ignoreAssembly = true;
+                        break;
+                    }
+                }
 
-				if( ignoreAssembly )
-					continue;
+                if (ignoreAssembly)
+                    continue;
 #endif
 
-				SearchAssemblyForConsoleMethods( assembly );
-			}
+                SearchAssemblyForConsoleMethods(assembly);
+            }
 		}
 
 		public static void SearchAssemblyForConsoleMethods( Assembly assembly )
 		{
 			try
 			{
+				List<ConsoleAttribute> methods = new List<ConsoleAttribute>();
 				foreach( Type type in assembly.GetExportedTypes() )
 				{
 					foreach( MethodInfo method in type.GetMethods( BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly ) )
 					{
-						foreach( object attribute in method.GetCustomAttributes( typeof( ConsoleMethodAttribute ), false ) )
+						foreach( ConsoleAttribute consoleAttribute in method.GetCustomAttributes( typeof(ConsoleAttribute), false ) )
 						{
-							ConsoleMethodAttribute consoleMethod = attribute as ConsoleMethodAttribute;
-							if( consoleMethod != null )
-								AddCommand( consoleMethod.Command, consoleMethod.Description, method, null, consoleMethod.ParameterNames );
+							consoleAttribute.SetMethod(method);
+							methods.Add(consoleAttribute);
 						}
 					}
+				}
+
+				methods.Sort((a, b) => a.Order.CompareTo(b.Order));
+				for (int i = 0; i < methods.Count; i++)
+				{
+					methods[i].Load();
 				}
 			}
 			catch( NotSupportedException ) { }
@@ -218,6 +217,17 @@ namespace IngameDebugConsole
 				Debug.LogError( "Couldn't search assembly for [ConsoleMethod] attributes: " + assembly.GetName().Name + "\n" + e.ToString() );
 			}
 		}
+
+        public static IReadOnlyList<Assembly> GetAllAssemblies()
+        {
+#if UNITY_6000_4_OR_NEWER
+            return UnityEngine.Assemblies.CurrentAssemblies.GetLoadedAssemblies();
+#elif UNITY_EDITOR || !NETFX_CORE
+            return AppDomain.CurrentDomain.GetAssemblies();
+#else
+            return null;
+#endif
+        }
 
 		public static List<ConsoleMethodInfo> GetAllCommands()
 		{
@@ -298,24 +308,16 @@ namespace IngameDebugConsole
 			stringBuilder.Append( "Temporary Cache Path: " ).Append( Application.temporaryCachePath ).Append( "\n" );
 			stringBuilder.Append( "Device ID: " ).Append( SystemInfo.deviceUniqueIdentifier ).Append( "\n" );
 			stringBuilder.Append( "Max Texture Size: " ).Append( SystemInfo.maxTextureSize ).Append( "\n" );
-#if UNITY_5_6_OR_NEWER
 			stringBuilder.Append( "Max Cubemap Size: " ).Append( SystemInfo.maxCubemapSize ).Append( "\n" );
-#endif
 			stringBuilder.Append( "Accelerometer: " ).Append( SystemInfo.supportsAccelerometer ? "supported\n" : "not supported\n" );
 			stringBuilder.Append( "Gyro: " ).Append( SystemInfo.supportsGyroscope ? "supported\n" : "not supported\n" );
 			stringBuilder.Append( "Location Service: " ).Append( SystemInfo.supportsLocationService ? "supported\n" : "not supported\n" );
-#if !UNITY_2019_1_OR_NEWER
-			stringBuilder.Append( "Image Effects: " ).Append( SystemInfo.supportsImageEffects ? "supported\n" : "not supported\n" );
-			stringBuilder.Append( "RenderToCubemap: " ).Append( SystemInfo.supportsRenderToCubemap ? "supported\n" : "not supported\n" );
-#endif
 			stringBuilder.Append( "Compute Shaders: " ).Append( SystemInfo.supportsComputeShaders ? "supported\n" : "not supported\n" );
 			stringBuilder.Append( "Shadows: " ).Append( SystemInfo.supportsShadows ? "supported\n" : "not supported\n" );
 			stringBuilder.Append( "Instancing: " ).Append( SystemInfo.supportsInstancing ? "supported\n" : "not supported\n" );
 			stringBuilder.Append( "Motion Vectors: " ).Append( SystemInfo.supportsMotionVectors ? "supported\n" : "not supported\n" );
 			stringBuilder.Append( "3D Textures: " ).Append( SystemInfo.supports3DTextures ? "supported\n" : "not supported\n" );
-#if UNITY_5_6_OR_NEWER
 			stringBuilder.Append( "3D Render Textures: " ).Append( SystemInfo.supports3DRenderTextures ? "supported\n" : "not supported\n" );
-#endif
 			stringBuilder.Append( "2D Array Textures: " ).Append( SystemInfo.supports2DArrayTextures ? "supported\n" : "not supported\n" );
 			stringBuilder.Append( "Cubemap Array Textures: " ).Append( SystemInfo.supportsCubemapArrayTextures ? "supported" : "not supported" );
 
@@ -439,7 +441,7 @@ namespace IngameDebugConsole
 			AddCommand( command, description, method, instance, parameterNames );
 		}
 
-		private static void AddCommand( string command, string description, MethodInfo method, object instance, string[] parameterNames )
+		internal static void AddCommand( string command, string description, MethodInfo method, object instance, string[] parameterNames )
 		{
 			if( string.IsNullOrEmpty( command ) )
 			{
@@ -527,9 +529,7 @@ namespace IngameDebugConsole
 			StringBuilder methodSignature = new StringBuilder( 256 );
 			string[] parameterSignatures = new string[parameterTypes.Length];
 
-#if USE_BOLD_COMMAND_SIGNATURES
 			methodSignature.Append( "<b>" );
-#endif
 			methodSignature.Append( command );
 
 			if( parameterTypes.Length > 0 )
@@ -549,9 +549,7 @@ namespace IngameDebugConsole
 				}
 			}
 
-#if USE_BOLD_COMMAND_SIGNATURES
 			methodSignature.Append( "</b>" );
-#endif
 
 			if( !string.IsNullOrEmpty( description ) )
 				methodSignature.Append( ": " ).Append( description );
@@ -1130,7 +1128,7 @@ namespace IngameDebugConsole
 		public static bool ParseFloat( string input, out object output )
 		{
 			float value;
-			bool result = float.TryParse( !input.EndsWith( "f", StringComparison.OrdinalIgnoreCase ) ? input : input.Substring( 0, input.Length - 1 ), out value );
+			bool result = float.TryParse( !input.EndsWith( "f", StringComparison.OrdinalIgnoreCase ) ? input : input.Substring( 0, input.Length - 1 ), NumberStyles.Float, CultureInfo.InvariantCulture, out value );
 
 			output = value;
 			return result;
@@ -1139,7 +1137,7 @@ namespace IngameDebugConsole
 		public static bool ParseDouble( string input, out object output )
 		{
 			double value;
-			bool result = double.TryParse( !input.EndsWith( "f", StringComparison.OrdinalIgnoreCase ) ? input : input.Substring( 0, input.Length - 1 ), out value );
+			bool result = double.TryParse( !input.EndsWith( "f", StringComparison.OrdinalIgnoreCase ) ? input : input.Substring( 0, input.Length - 1 ), NumberStyles.Float, CultureInfo.InvariantCulture, out value );
 
 			output = value;
 			return result;
@@ -1148,7 +1146,7 @@ namespace IngameDebugConsole
 		public static bool ParseDecimal( string input, out object output )
 		{
 			decimal value;
-			bool result = decimal.TryParse( !input.EndsWith( "f", StringComparison.OrdinalIgnoreCase ) ? input : input.Substring( 0, input.Length - 1 ), out value );
+			bool result = decimal.TryParse( !input.EndsWith( "f", StringComparison.OrdinalIgnoreCase ) ? input : input.Substring( 0, input.Length - 1 ), NumberStyles.Float, CultureInfo.InvariantCulture, out value );
 
 			output = value;
 			return result;
@@ -1199,7 +1197,6 @@ namespace IngameDebugConsole
 			return ParseVector( input, typeof( Bounds ), out output );
 		}
 
-#if UNITY_2017_2_OR_NEWER
 		public static bool ParseVector2Int( string input, out object output )
 		{
 			return ParseVector( input, typeof( Vector2Int ), out output );
@@ -1219,7 +1216,6 @@ namespace IngameDebugConsole
 		{
 			return ParseVector( input, typeof( BoundsInt ), out output );
 		}
-#endif
 
 		public static bool ParseGameObject( string input, out object output )
 		{
@@ -1466,7 +1462,6 @@ namespace IngameDebugConsole
 
 				output = new Bounds( center, size );
 			}
-#if UNITY_2017_2_OR_NEWER
 			else if( vectorType == typeof( Vector3Int ) )
 			{
 				Vector3Int result = Vector3Int.zero;
@@ -1512,7 +1507,6 @@ namespace IngameDebugConsole
 
 				output = new BoundsInt( center, size );
 			}
-#endif
 			else
 			{
 				output = null;

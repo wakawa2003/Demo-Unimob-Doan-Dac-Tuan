@@ -8,7 +8,6 @@ namespace IngameDebugConsole
 {
 	public class DebugLogRecycledListView : MonoBehaviour
 	{
-#pragma warning disable 0649
 		// Cached components
 		[SerializeField]
 		private RectTransform transformComponent;
@@ -21,7 +20,6 @@ namespace IngameDebugConsole
 		private Color logItemNormalColor2;
 		[SerializeField]
 		private Color logItemSelectedColor;
-#pragma warning restore 0649
 
 		internal DebugLogManager manager;
 		private ScrollRect scrollView;
@@ -36,10 +34,16 @@ namespace IngameDebugConsole
 		private float heightOfSelectedLogEntry;
 		private float DeltaHeightOfSelectedLogEntry { get { return heightOfSelectedLogEntry - logItemHeight; } }
 
+		/// These properties are used by <see cref="OnBeforeFilterLogs"/> and <see cref="OnAfterFilterLogs"/>.
+		private int collapsedOrderOfSelectedLogEntry;
+		private float scrollDistanceToSelectedLogEntry;
+
 		// Log items used to visualize the visible debug entries
 		private readonly DynamicCircularBuffer<DebugLogItem> visibleLogItems = new DynamicCircularBuffer<DebugLogItem>( 32 );
 
 		private bool isCollapseOn = false;
+
+        private bool viewportSizeChanged;
 
 		// Current indices of debug entries shown on screen
 		private int currentTopIndex = -1, currentBottomIndex = -1;
@@ -128,6 +132,57 @@ namespace IngameDebugConsole
 			heightOfSelectedLogEntry = 0f;
 		}
 
+		/// <summary>
+		/// Cache the currently selected log item's properties so that its position can be restored after <see cref="OnAfterFilterLogs"/> is called.
+		/// </summary>
+		public void OnBeforeFilterLogs()
+		{
+			collapsedOrderOfSelectedLogEntry = 0;
+			scrollDistanceToSelectedLogEntry = 0f;
+
+			if( selectedLogEntry != null )
+			{
+				if( !isCollapseOn )
+				{
+					for( int i = 0; i < indexOfSelectedLogEntry; i++ )
+					{
+						if( entriesToShow[i] == selectedLogEntry )
+							collapsedOrderOfSelectedLogEntry++;
+					}
+				}
+
+				scrollDistanceToSelectedLogEntry = indexOfSelectedLogEntry * ItemHeight - transformComponent.anchoredPosition.y;
+			}
+		}
+
+		/// <summary>
+		/// See <see cref="OnBeforeFilterLogs"/>.
+		/// </summary>
+		public void OnAfterFilterLogs()
+		{
+			// Refresh selected log entry's index
+			int newIndexOfSelectedLogEntry = -1;
+			if( selectedLogEntry != null )
+			{
+				for( int i = 0; i < entriesToShow.Count; i++ )
+				{
+					if( entriesToShow[i] == selectedLogEntry && collapsedOrderOfSelectedLogEntry-- == 0 )
+					{
+						newIndexOfSelectedLogEntry = i;
+						break;
+					}
+				}
+			}
+
+			if( newIndexOfSelectedLogEntry < 0 )
+				DeselectSelectedLogItem();
+			else
+			{
+				indexOfSelectedLogEntry = newIndexOfSelectedLogEntry;
+				transformComponent.anchoredPosition = new Vector2( 0f, newIndexOfSelectedLogEntry * ItemHeight - scrollDistanceToSelectedLogEntry );
+			}
+		}
+
 		// Number of debug entries may have changed, update the list
 		public void OnLogEntriesUpdated( bool updateAllVisibleItemContents )
 		{
@@ -182,7 +237,7 @@ namespace IngameDebugConsole
 
 			if( visibleLogItems.Count == 0 )
 			{
-				currentTopIndex = -1;
+				currentTopIndex = currentBottomIndex = - 1;
 
 				if( !manager.SnapToBottom )
 					transformComponent.anchoredPosition = Vector2.zero;
@@ -238,23 +293,34 @@ namespace IngameDebugConsole
 			return -1;
 		}
 
-		// Log window's width has changed, update the expanded (currently selected) log's height
-		public void OnViewportWidthChanged()
-		{
-			if( indexOfSelectedLogEntry >= entriesToShow.Count )
-				return;
+        private void OnRectTransformDimensionsChange()
+        {
+            viewportSizeChanged = true;
+        }
 
+        private void LateUpdate()
+        {
+            if (viewportSizeChanged)
+            {
+                viewportSizeChanged = false;
+                OnViewportSizeChanged();
+            }
+        }
+
+        private void OnViewportSizeChanged()
+		{
+            if (indexOfSelectedLogEntry >= entriesToShow.Count)
+            {
+                UpdateItemsInTheList(false);
+                return;
+            }
+
+            // Update the expanded (currently selected) log's height
 			CalculateSelectedLogEntryHeight();
 			CalculateContentHeight();
 			UpdateItemsInTheList( true );
 
 			manager.ValidateScrollPosition();
-		}
-
-		// Log window's height has changed, update the list
-		public void OnViewportHeightChanged()
-		{
-			UpdateItemsInTheList( false );
 		}
 
 		private void CalculateContentHeight()
@@ -380,7 +446,7 @@ namespace IngameDebugConsole
 			{
 				// There is nothing to show but some log items are still visible; pool them
 				visibleLogItems.TrimStart( visibleLogItems.Count, poolLogItemAction );
-				currentTopIndex = -1;
+				currentTopIndex = currentBottomIndex = -1;
 			}
 		}
 

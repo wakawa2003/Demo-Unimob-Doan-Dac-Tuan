@@ -9,10 +9,11 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using EasyDI;
 using Cysharp.Threading.Tasks.Linq;
+using System;
 
 namespace MyGameNamespace
 {
-    public class BoxController : MonoBehaviour, IPointerClickHandler
+    public class BoxController : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, IPointerUpHandler
     {
         [field: SerializeField] public string ResourcesID { get; set; } = "resource_1";
         [SerializeField] private Animation animation;
@@ -38,7 +39,7 @@ namespace MyGameNamespace
         public string Name;
         public int CostToUnBox = 40;
         public UnityEvent<PointerEventData> OnPointerClick;
-        private IStateMachine _stateMachine;
+        private StateMachine _stateMachine;
 
         [Inject]
         void inject(IUserData userData)
@@ -46,21 +47,36 @@ namespace MyGameNamespace
             this.userData = userData;
         }
 
-        async void Awake()
+
+
+        public interface IStateBaseWithPayload
+        {
+            void SetPayload(object payload);
+        }
+        void Awake()
         {
             plantObject.GetComponent<IPlant>().ResourcesID = ResourcesID;
             UIContainer.gameObject.SetActive(false);
             _stateMachine = new StateMachine();
-            _stateMachine.SetResolver(new GameUtils.DefaultResolver());
+            _stateMachine.SetResolver(new Resolver());
 
             plantObject.gameObject.SetActive(false);
             // Đăng ký các state
-            await _stateMachine.Execute<IdleState, BoxController>(this, destroyCancellationToken);
+            _stateMachine.Execute<IdleState, BoxController>(this, destroyCancellationToken).Forget();
         }
 
         void IPointerClickHandler.OnPointerClick(PointerEventData eventData)
         {
+            Debug.Log($"OnPointerClick Box");
             OnPointerClick?.Invoke(eventData);
+        }
+
+        public void OnPointerDown(PointerEventData eventData)
+        {
+        }
+
+        public void OnPointerUp(PointerEventData eventData)
+        {
         }
 
         public class IdleState : StateBase<BoxController>
@@ -179,6 +195,23 @@ namespace MyGameNamespace
 
                 return await UniTask.FromResult(Transition.GoToExit());
 
+            }
+        }
+        public class Resolver : ITypeResolver
+        {
+            public object Resolve(Type type)
+            {
+                if (type == typeof(BoxController.IdleState))
+                {
+                    return new BoxController.IdleState();
+                }
+                if (type == typeof(BoxController.BuildingState))
+                {
+                    return new BoxController.BuildingState();
+                }
+
+                // Nếu có thêm state khác thì bổ sung ở đây
+                throw new InvalidOperationException($"Không thể resolve type: {type.FullName}");
             }
         }
 
