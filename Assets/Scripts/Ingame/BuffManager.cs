@@ -69,6 +69,8 @@ namespace MyGameNamespace
 
             public virtual int getCoin()
             {
+
+                // Debug.Log($"get coin in buff");
                 // return 0;
                 var root = (this as IPlant).GetRoot();
                 var idResourcesRoot = root.PlantID;

@@ -56,7 +56,7 @@ namespace MyGameNamespace
 
         public async UniTask RunToPosition(Vector3 target, Vector3 rotationAtEnd, CancellationToken cancellationToken)
         {
-            Debug.Log($"RunToPosition: {target}");
+            // Debug.Log($"RunToPosition: {target}");
             if (agent.SetDestination(target))
             {
                 animator.SetBool("IsMove", true);
@@ -71,12 +71,12 @@ namespace MyGameNamespace
             }, cancellationToken);
             animator.SetBool("IsMove", false);
             await transform.DORotate(rotationAtEnd, 0.2f).AsyncWaitForCompletion().AsUniTask().AttachExternalCancellation(cancellationToken);
-            Debug.Log($"chay toi noi");
+            // Debug.Log($"chay toi noi");
         }
 
         public void TakeOffCarryableByAnother(ICarrier carrier)
         {
-            Debug.Log($"TakeOffCarryable", this);
+            // Debug.Log($"TakeOffCarryable", this);
             Carryable = null;
         }
 
@@ -98,7 +98,7 @@ namespace MyGameNamespace
 
                 EventDispatcher.OnDeliverInit?.Invoke(Payload);
 
-                Debug.Log($"InitState", Payload);
+                // Debug.Log($"InitState", Payload);
                 return base.Initialize(token);
             }
 
@@ -134,7 +134,7 @@ namespace MyGameNamespace
         {
             public override UniTask Initialize(CancellationToken token)
             {
-                Debug.Log($"DeliveringState", Payload);
+                // Debug.Log($"DeliveringState", Payload);
                 Payload.deliveringState = this;
                 Payload.animator.SetBool("IsCarryMove", true);
                 return base.Initialize(token);

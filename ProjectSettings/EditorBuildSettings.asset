@@ -5,9 +5,12 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: Assets/Test/Test Unistate.unity
-    guid: 8c9cfa26abfee488c85f1582747f6a02
+  - enabled: 1
+    path: Assets/Scenes/Root.unity
+    guid: f090836af31f245ab9e74af5c8cddde2
+  - enabled: 1
+    path: Assets/Scenes/MainScene.unity
+    guid: 4da247c50a8fe4fbca7b61e47b0b421c
   m_configObjects:
     com.unity.dt.app-ui: {fileID: 11400000, guid: 99f9c9493070a9d4c979a8fec7c5a8d3, type: 2}
   m_UseUCBPForAssetBundles: 0

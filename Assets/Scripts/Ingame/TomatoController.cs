@@ -33,7 +33,7 @@ namespace MyGameNamespace
         }
         public void Setup(ICarrier owner, Transform[] posList)
         {
-            Debug.Log($"SetSpawn");
+            // Debug.Log($"SetSpawn");
             Owner = owner;
             for (int i = 0; i < posList.Length; i++)
             {

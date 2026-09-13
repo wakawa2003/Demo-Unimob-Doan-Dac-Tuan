@@ -107,7 +107,7 @@ namespace MyGameNamespace
 
             public override UniTask Initialize(CancellationToken token)
             {
-                Debug.Log($"customer waiting", Payload);
+                // Debug.Log($"customer waiting", Payload);
                 Payload.waitingState = this;
                 EventDispatcher.OnCustomerReadyToTake?.Invoke(Payload);
                 return base.Initialize(token);
@@ -155,7 +155,7 @@ namespace MyGameNamespace
             {
                 await Payload.RunToPosition(Payload.endPos, Vector3.forward, false, token);
                 Destroy(Payload.gameObject);
-                Debug.Log($"Customer hoan thanh!!!!!");
+                // Debug.Log($"Customer hoan thanh!!!!!");
                 return Transition.GoToExit();
 
             }

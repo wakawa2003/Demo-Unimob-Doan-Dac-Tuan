@@ -39,7 +39,7 @@ namespace MyGameNamespace
         public ICarryable Carryable { get; set; }
         [field: SerializeField] public int _CoinEarn { get; set; }
         [field: SerializeField] public float _Duration { get; set; }
-        [Inject] public IPlant Decore { get; set; }
+        public IPlant Decore { get; set; }
         public IPlant PrevDecore { get; set; }
         int CoinEarn => (this as IPlant).CoinEarn;
         float Duration => (this as IPlant).Duration;
@@ -49,6 +49,14 @@ namespace MyGameNamespace
 
         void Awake()
         {
+
+            // var buffForPlant_X2_X3 = new BuffManager.BuffForPlant_x2_x3();
+            // buffForPlant_X2_X3.PrevDecore = this;
+            // Decore = buffForPlant_X2_X3;
+            // PrevDecore = this;
+
+            (this as IEasyDIDecore<IPlant>).AddDecore(new BuffManager.BuffForPlant_x2_x3());//them vao vi DI dang loi.
+
             constructionUpgradwView.gameObject.SetActive(false);
             SetLevel(levelConfigList[0].Value);
 
@@ -56,6 +64,7 @@ namespace MyGameNamespace
             viewStats.transform.localScale = Vector3.zero;
             viewStats.transform.DOScale(Vector3.one, 0.3f).SetDelay(0.5f).SetEase(Ease.OutBack);
             prevSpawnCarry = Time.time;
+
         }
 
 
@@ -65,7 +74,7 @@ namespace MyGameNamespace
             //handle spawn carryable
             if ((Time.time >= prevSpawnCarry + Duration) && Carryable == null)
             {
-                Debug.Log($"spawn Tomato");
+                // Debug.Log($"spawn Tomato");
                 var newCarryObject = Instantiate(carryablePrefabs, transform);
                 Carryable = newCarryObject.GetComponent<ICarryable>();
                 Carryable.Setup(this, carryPositionList);
